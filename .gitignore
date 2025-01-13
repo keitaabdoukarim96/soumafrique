@@ -1,0 +1,18 @@
+# Ignorer les dépendances de Node.js
+node_modules/
+
+# Ignorer les fichiers temporaires ou système
+*.log
+*.tmp
+*.lock
+
+# Ignorer les configurations d'éditeurs de code
+.vscode/
+.idea/
+
+# Ignorer les fichiers générés
+dist/
+.cache/
+
+# Ignorer les fichiers d'environnement
+.env

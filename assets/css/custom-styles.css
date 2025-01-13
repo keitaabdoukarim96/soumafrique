@@ -1,0 +1,29 @@
+.hover-menu {
+    font-weight: bold;
+    color: black;
+    transition: all 0.3s ease;
+  }
+  
+  .hover-menu:hover {
+    background-color: #c4211c; /* Rouge */
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 0.25rem;
+  }
+  
+  .active {
+    background-color: #f87171; /* Rouge */
+    color: white;
+    border-bottom: 2px solid #f87171; /* Indicateur d'activité */
+  }
+/* Dégradé du bouton */
+.btn-gradient {
+    background: linear-gradient(to right, #ebb62c, #2d7000);
+    color: white;
+    transition: background 0.3s ease;
+  }
+  
+  /* Dégradé au survol */
+  .btn-gradient:hover {
+    background: linear-gradient(to right, #2d7000, #ebb62c);
+  }
