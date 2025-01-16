@@ -27,3 +27,18 @@
   .btn-gradient:hover {
     background: linear-gradient(to right, #2d7000, #ebb62c);
   }
+
+  /* Carte map */
+  #map {
+    height: 400px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  main {
+    margin-top: 80px; /* Compense la hauteur du header */
+  }
+
+  .circle.active {
+    background-color: #ff0000; /* Couleur rouge pour le cercle actif */
+  }
+  

@@ -1,6 +1,10 @@
+
 <footer style="background: linear-gradient(to right, #ebb62c, #2d7000); padding: 20px;" 
         class="text-white py-10 rounded-2xl shadow-lg p-6 border w-full max-w-6xl mx-auto relative -mb-8 z-10">
-  <div class="container mx-auto text-center">
+        
+        
+        <div id="map"></div>
+        <div class="container mx-auto text-center">
     <!-- Texte du formulaire -->
     <p class="font-bold text-lg mb-4">
       Abonnez-vous pour recevoir de nouvelles promotions
@@ -31,6 +35,8 @@
 
 
 
-  <script src="./assets/js/main.js"></script> <!-- Fichier JS -->
+  <script src="/soumafrique/assets/js/carousel.js"></script> <!-- Fichier JS -->
+  <script src="/soumafrique/assets/js/main.js"></script> <!-- Fichier JS -->
+  <script src="/soumafrique/assets/js/map.js"></script><!--Carte Map-->
 </body>
 </html>

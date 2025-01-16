@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="./assets/css/styles.css">
+  <link rel="stylesheet" href="/soumafrique/assets/css/styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="stylesheet" href="./assets/css/custom-styles.css"> 
+  <link rel="stylesheet" href="/soumafrique/assets/css/custom-styles.css"> 
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  
   <title>SoumAfrique</title>
 </head>
 <body class="font-sans bg-gray-100 flex flex-col min-h-screen">
@@ -18,7 +21,7 @@
       <!-- Logo -->
       <div class="flex items-center">
         <a href="./index.php">
-          <img src="./assets/img/logo/logo.png" alt="Logo SoumAfrique" class="h-20">
+          <img src="/soumafrique/assets/img/logo/logo.png" alt="Logo SoumAfrique" class="h-20">
         </a>
       </div>
 
