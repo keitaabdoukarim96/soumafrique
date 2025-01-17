@@ -97,6 +97,13 @@
     
       <a href="./about.php" class="block font-bold px-4 py-2 text-black hover-menu">À propos</a>
       <a href="./contact.php" class="block font-bold px-4 py-2 text-black hover-menu">Contact</a>
+
     </div>
-    
-  </header>
+    <!-- Bouton pour ouvrir la sidebar -->
+ 
+</header>
+
+<button id="open-sidebar" class="fixed top-4 left-4 bg-green-700 text-white p-3 rounded-full shadow-lg">
+    <i class="fas fa-sliders-h"></i>
+  </button>
+

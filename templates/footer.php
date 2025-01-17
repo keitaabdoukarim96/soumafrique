@@ -1,4 +1,3 @@
-
 <footer style="background: linear-gradient(to right, #ebb62c, #2d7000); padding: 20px;" 
         class="text-white py-10 rounded-2xl shadow-lg p-6 border w-full max-w-6xl mx-auto relative -mb-8 z-10">
         
@@ -36,7 +35,7 @@
 
 
   <script src="/soumafrique/assets/js/carousel.js"></script> <!-- Fichier JS -->
-  <script src="/soumafrique/assets/js/main.js"></script> <!-- Fichier JS -->
+  <script src="/soumafrique/assets/js/main.js"></script>
   <script src="/soumafrique/assets/js/map.js"></script><!--Carte Map-->
 </body>
 </html>
