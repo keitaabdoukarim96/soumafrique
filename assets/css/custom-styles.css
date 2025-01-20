@@ -10,6 +10,19 @@
   padding: 0.5rem 1rem;
   border-radius: 0.25rem;
 }
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  header .container {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  nav {
+    display: none;
+  }
+}
+
 /* Sidebar Styles */
 aside {
   min-height: calc(100vh - 80px); /* Ajuster à la hauteur restante après le header */
@@ -47,4 +60,37 @@ aside {
   border-radius: 8px; /* Coins arrondis */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre pour l'esthétique */
 }
+
+
+/* Champs de formulaire */
+input,
+textarea {
+  border: 2px solid #d1d5db; /* Bordure grise par défaut */
+  background-color: #f9fafb; /* Arrière-plan gris clair */
+  padding: 0.5rem 1rem; /* Espacement interne */
+  font-size: 1rem; /* Taille de texte lisible */
+  border-radius: 0.375rem; /* Coins arrondis */
+  transition: all 0.3s ease; /* Animation pour les interactions */
+}
+
+/* Style au survol */
+input:focus,
+textarea:focus {
+  border-color: #16a34a; /* Bordure verte lors de la sélection */
+  background-color: #ffffff; /* Arrière-plan blanc au focus */
+  box-shadow: 0 0 5px rgba(22, 163, 74, 0.5); /* Effet de lumière autour */
+  outline: none; /* Retirer le contour bleu par défaut */
+}
+
+@keyframes popup-fade-in {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 

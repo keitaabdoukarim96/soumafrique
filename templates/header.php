@@ -50,18 +50,19 @@
           </div>
         </div>
       
-        <a href="./about.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded">À propos</a>
-        <a href="./contact.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded">Contact</a>
+        <a href="/soumafrique/about.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded">À propos</a>
+        <a href="/soumafrique/contact.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded">Contact</a>
       </nav>
       
 
 
-      <!-- Icônes à droite -->
-      <div class="flex space-x-4">
-        <a href="#" class="text-black hover-menu"><i class="fas fa-search"></i></a>
-        <a href="./panier/panier.php" class="text-black hover-menu"><i class="fas fa-shopping-cart"></i></a>
-        <a href="./user/profil.php" class="text-black hover-menu"><i class="fas fa-user"></i></a>
-      </div>
+        <!-- Icônes à droite -->
+        <div class="flex space-x-4">
+          <a href="./panier/panier.php" class="text-black hover-menu"><i class="fas fa-shopping-cart"></i></a>
+          <a href="./user/profil.php" class="text-black hover-menu"><i class="fas fa-user"></i></a>
+        </div>
+
+  
 
       <!-- Menu mobile -->
       <button id="menu-toggle" class="md:hidden text-black">
