@@ -12,4 +12,11 @@ document.querySelectorAll("[data-target]").forEach(menuItem => {
   });
 });
 
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleFilter = document.getElementById("toggle-filter");
+  const sidebar = document.getElementById("sidebar");
 
+  toggleFilter.addEventListener("click", () => {
+    sidebar.classList.toggle("hidden");
+  });
+});

@@ -6,7 +6,7 @@ include('../templates/header.php');
 <section class="relative">
   <div class="relative w-full h-[70vh]">
     <!-- Image de fond -->
-    <img src="./assets/img/panier-banner.png" alt="Bannière Panier" class="absolute inset-0 w-full h-full object-cover">
+    <img src="../assets/img/panier-banner.png" alt="Bannière Panier" class="absolute inset-0 w-full h-full object-cover">
     <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4" style="padding-top: calc(80px + 1rem);">
       <h1 class="text-white text-2xl sm:text-3xl md:text-4xl font-bold text-center leading-tight">
         Votre Panier
@@ -98,7 +98,55 @@ include('../templates/header.php');
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
     <!-- Produit 1 -->
     <div class="bg-white shadow-md rounded-lg p-4 border-2" style="border-image: linear-gradient(to right, #ebb62c, #2d7000) 1;">
-      <img src="assets/img/epice1.jpg" alt="Épice 1" class="w-full h-40 object-cover rounded-lg mb-4">
+      <img src="./../assets/img/product/epice1.jpg" alt="Épice 1" class="w-full h-40 object-cover rounded-lg mb-4">
+      <h3 class="text-lg font-bold text-gray-800 mb-2">Poudre de Kinkeliba</h3>
+      <p class="text-gray-600 mb-1"><strong>Boutique :</strong> African Market</p>
+      <p class="text-gray-600 mb-1"><strong>Adresse :</strong> 45 rue du Marché</p>
+      <p class="text-gray-600 mb-1"><strong>Horaire :</strong> 09H00 à 20H00</p>
+      <div class="flex items-center space-x-2 mt-4">
+        <button class="btn-gradient py-2 px-4 w-full rounded-lg font-bold text-white hover:shadow-lg">
+          VOIR LES DÉTAILS
+        </button>
+        <a href="#" class="text-green-600 text-xl">
+          <i class="fas fa-shopping-cart"></i>
+        </a>
+      </div>
+    </div>
+    <!-- Produit 2 -->
+    <div class="bg-white shadow-md rounded-lg p-4 border-2" style="border-image: linear-gradient(to right, #ebb62c, #2d7000) 1;">
+      <img src="./../assets/img/product/p2.jpg" alt="Épice 1" class="w-full h-40 object-cover rounded-lg mb-4">
+      <h3 class="text-lg font-bold text-gray-800 mb-2">Poudre de Kinkeliba</h3>
+      <p class="text-gray-600 mb-1"><strong>Boutique :</strong> African Market</p>
+      <p class="text-gray-600 mb-1"><strong>Adresse :</strong> 45 rue du Marché</p>
+      <p class="text-gray-600 mb-1"><strong>Horaire :</strong> 09H00 à 20H00</p>
+      <div class="flex items-center space-x-2 mt-4">
+        <button class="btn-gradient py-2 px-4 w-full rounded-lg font-bold text-white hover:shadow-lg">
+          VOIR LES DÉTAILS
+        </button>
+        <a href="#" class="text-green-600 text-xl">
+          <i class="fas fa-shopping-cart"></i>
+        </a>
+      </div>
+    </div>
+    <!-- Produit 3 -->
+    <div class="bg-white shadow-md rounded-lg p-4 border-2" style="border-image: linear-gradient(to right, #ebb62c, #2d7000) 1;">
+      <img src="./../assets/img/product/p3.png" alt="Épice 1" class="w-full h-40 object-cover rounded-lg mb-4">
+      <h3 class="text-lg font-bold text-gray-800 mb-2">Poudre de Kinkeliba</h3>
+      <p class="text-gray-600 mb-1"><strong>Boutique :</strong> African Market</p>
+      <p class="text-gray-600 mb-1"><strong>Adresse :</strong> 45 rue du Marché</p>
+      <p class="text-gray-600 mb-1"><strong>Horaire :</strong> 09H00 à 20H00</p>
+      <div class="flex items-center space-x-2 mt-4">
+        <button class="btn-gradient py-2 px-4 w-full rounded-lg font-bold text-white hover:shadow-lg">
+          VOIR LES DÉTAILS
+        </button>
+        <a href="#" class="text-green-600 text-xl">
+          <i class="fas fa-shopping-cart"></i>
+        </a>
+      </div>
+    </div>
+    <!-- Produit 4 -->
+    <div class="bg-white shadow-md rounded-lg p-4 border-2" style="border-image: linear-gradient(to right, #ebb62c, #2d7000) 1;">
+      <img src="./../assets/img/product/epice1.jpg" alt="Épice 1" class="w-full h-40 object-cover rounded-lg mb-4">
       <h3 class="text-lg font-bold text-gray-800 mb-2">Poudre de Kinkeliba</h3>
       <p class="text-gray-600 mb-1"><strong>Boutique :</strong> African Market</p>
       <p class="text-gray-600 mb-1"><strong>Adresse :</strong> 45 rue du Marché</p>

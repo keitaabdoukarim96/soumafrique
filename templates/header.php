@@ -26,30 +26,9 @@
       </div>
 
       <nav class="hidden md:flex space-x-8 items-center h-16">
-        <a href="./index.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded">Accueil</a>
-        
-        <!-- Menu Épicerie -->
-        <div class="relative group">
-          <a href="#" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded" id="menu-epicerie">Épicerie</a>
-          <div class="absolute hidden group-hover:block bg-white font-bold shadow-md rounded mt-2">
-            <a href="./sousmenus/epicerie/epices-entieres.php" class="block px-4 py-2 text-black hover:bg-gray-200 whitespace-nowrap min-w-[150px]" id="submenu-entieres">Épices Entières</a>
-            <a href="./sousmenus/epicerie/epices-moulues.php" class="block px-4 py-2 text-black hover:bg-gray-200 whitespace-nowrap min-w-[150px]" id="submenu-moulues">Épices Moulues</a>
-            <a href="./sousmenus/epicerie/mélanges-épices.php" class="block px-4 py-2 text-black hover:bg-gray-200 whitespace-nowrap min-w-[150px]" id="submenu-melanges">Mélanges d'Épices</a>
-            <a href="./sousmenus/epicerie/autres.php" class="block px-4 py-2 text-black hover:bg-gray-200 whitespace-nowrap min-w-[150px]" id="submenu-autres">Autres</a>
-          </div>
-        </div>
-      
-        <!-- Menu Recettes -->
-        <div class="relative group font-bold">
-          <a href="#" class="text-black hover:bg-red-700 hover:text-white py-2 px-4 rounded" id="menu-recettes">Recettes</a>
-          <div class="absolute hidden group-hover:block bg-white shadow-md rounded mt-2">
-            <a href="./sousmenus/recettes/entrées.php" class="block  px-4 py-2 text-black hover:bg-gray-200">Entrées</a>
-            <a href="./sousmenus/recettes/plats-principaux.php" class="block px-4 py-2 text-black hover:bg-gray-200">Plats Principaux</a>
-            <a href="./sousmenus/recettes/accompagnements.php" class="block px-4 py-2 text-black hover:bg-gray-200">Accompagnements</a>
-            <a href="./sousmenus/recettes/desserts.php" class="block px-4 py-2 text-black hover:bg-gray-200">Desserts</a>
-          </div>
-        </div>
-      
+        <a href="/soumafrique/index.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded">Accueil</a>
+          <a href="/soumafrique/epicerie.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded" id="menu-epicerie">Épicerie</a>
+          <a href="/soumafrique/recettes.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded" id="menu-recettes">Recettes</a>
         <a href="/soumafrique/about.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded">À propos</a>
         <a href="/soumafrique/contact.php" class="text-black font-bold hover:bg-red-700 hover:text-white py-2 px-4 rounded">Contact</a>
       </nav>

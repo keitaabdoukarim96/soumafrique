@@ -119,11 +119,113 @@
     </div>
   </aside>
 
-  <!-- Contenu principal -->
-  <div class="w-3/4 p-4 text-center">
-    <h1 class="text-2xl font-bold mb-4">Bienvenue sur SoumAfrique</h1>
-    <p>Insérez votre contenu principal ici.</p>
-  </div>
+    <!-- Contenu principal -->
+  <div class="w-3/4 p-4 ">
+      <!-- Section épices -->
+  <section class="">
+    <h2 class="text-2xl font-bold mb-6 text-center underline">Les Épices</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+      <!-- Exemple de carte épice -->
+      <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+        <img src="assets/img/product/p3.png" alt="Poudre de Kinkeliba" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h3 class="text-lg font-bold text-gray-800">Nom: Poudre de Kinkeliba</h3>
+          <p class="text-sm text-gray-600"><strong>Boutique:</strong> Smach Épicerie</p>
+          <p class="text-sm text-gray-600"><strong>Adresse:</strong> 6 rue charle lalances</p>
+          <p class="text-sm text-gray-600"><strong>Horaire:</strong> 08H00 A 22H30</p>
+          <div class="flex justify-between items-center mt-4">
+            <button class="btn-gradient py-2 px-4 text-white rounded-lg font-bold"><a href="./details/detail-epice.php">VOIR LES DÉTAILS</a></button>
+            <a href="./panier/panier.php" class="text-green-700">
+              <i class="fas fa-shopping-cart text-green-700 text-xl cursor-pointer"></i>
+          </a>
+          </div>
+        </div>
+      </div>
+      <!-- Répliquez pour d'autres épices -->
+      <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+        <img src="assets/img/product/p3.png" alt="Poivre en Poudre" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h3 class="text-lg font-bold text-gray-800">Nom: Poivre en Poudre</h3>
+          <p class="text-sm text-gray-600"><strong>Boutique:</strong> Smach Épicerie</p>
+          <p class="text-sm text-gray-600"><strong>Adresse:</strong> 27 faubourg besançon</p>
+          <p class="text-sm text-gray-600"><strong>Horaire:</strong> 08H00 A 22H30</p>
+          <div class="flex justify-between items-center mt-4">
+          <button class="btn-gradient py-2 px-4 text-white rounded-lg font-bold"><a href="./details/detail-epice.php">VOIR LES DÉTAILS</a></button>
+          <a href="./panier/panier.php" class="text-green-700">
+              <i class="fas fa-shopping-cart text-green-700 text-xl cursor-pointer"></i>
+          </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Répliquez pour d'autres épices -->
+      <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+        <img src="assets/img/product/p3.png" alt="Poivre en Poudre" class="w-full h-48 object-cover">
+        <div class="p-4">
+          <h3 class="text-lg font-bold text-gray-800">Nom: Poivre en Poudre</h3>
+          <p class="text-sm text-gray-600"><strong>Boutique:</strong> Smach Épicerie</p>
+          <p class="text-sm text-gray-600"><strong>Adresse:</strong> 27 faubourg besançon</p>
+          <p class="text-sm text-gray-600"><strong>Horaire:</strong> 08H00 A 22H30</p>
+          <div class="flex justify-between items-center mt-4">
+            <button class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR LES DÉTAILS</button>
+            <a href="./panier/panier.php" class="text-green-700">
+              <i class="fas fa-shopping-cart text-green-700 text-xl cursor-pointer"></i>
+          </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section recettes -->
+  <section class="mt-12">
+    <h2 class="text-2xl font-bold mb-6 text-center underline">Les Recettes</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+      <!-- Exemple de carte recette -->
+      <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+          <img src="assets/img/recette-1.png" alt="Recette Yassa" class="w-full h-48 object-cover">
+          <div class="p-4">
+            <h3 class="text-lg font-bold text-gray-800">Nom: Yassa de Poulet</h3>
+            <p class="text-sm text-gray-600 mt-2"><strong>Ingrédients:</strong> Poulet, oignons, citron...</p>
+            <p class="text-sm text-gray-600"><strong>Durée de cuisson:</strong> 30 à 40 min</p>
+            <p class="text-sm text-gray-600"><strong>Nombre de personnes:</strong> 3 à 4</p>
+            <p class="text-sm text-gray-600"><strong>Mode de cuisson :</strong> Les mor..</p>
+            <div class="flex justify-center items-center mt-4">
+              <button class="btn-gradient py-2 px-6 text-white rounded-lg font-bold"><a href="./details/detail-recette.php">VOIR LES DÉTAILS</a></button>
+            </div>
+          </div>
+        </div>
+        <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+          <img src="assets/img/recette-1.png" alt="Recette Yassa" class="w-full h-48 object-cover">
+          <div class="p-4">
+            <h3 class="text-lg font-bold text-gray-800">Nom: Yassa de Poulet</h3>
+            <p class="text-sm text-gray-600 mt-2"><strong>Ingrédients:</strong> Poulet, oignons, citron...</p>
+            <p class="text-sm text-gray-600"><strong>Durée de cuisson:</strong> 30 à 40 min</p>
+            <p class="text-sm text-gray-600"><strong>Nombre de personnes:</strong> 3 à 4</p>
+            <p class="text-sm text-gray-600"><strong>Mode de cuisson :</strong> Les mor..</p>
+            <div class="flex justify-center items-center mt-4">
+            <button class="btn-gradient py-2 px-6 text-white rounded-lg font-bold"><a href="./details/detail-recette.php">VOIR LES DÉTAILS</a></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+          <img src="assets/img/recette-1.png" alt="Recette Yassa" class="w-full h-48 object-cover">
+          <div class="p-4">
+            <h3 class="text-lg font-bold text-gray-800">Nom: Yassa de Poulet</h3>
+            <p class="text-sm text-gray-600 mt-2"><strong>Ingrédients:</strong> Poulet, oignons, citron...</p>
+            <p class="text-sm text-gray-600"><strong>Durée de cuisson:</strong> 30 à 40 min</p>
+            <p class="text-sm text-gray-600"><strong>Nombre de personnes:</strong> 3 à 4</p>
+            <p class="text-sm text-gray-600"><strong>Mode de cuisson :</strong> Les mor..</p>
+            <div class="flex justify-center items-center mt-4">
+            <button class="btn-gradient py-2 px-6 text-white rounded-lg font-bold"><a href="./details/detail-recette.php">VOIR LES DÉTAILS</a></button>
+            </div>
+          </div>
+        </div>
+    </div>
+  </section>
+      
+    </div>
 </div>
 
 </main>
