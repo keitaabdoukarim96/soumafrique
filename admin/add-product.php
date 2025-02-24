@@ -1,4 +1,8 @@
-<div class="flex justify-center items-center min-h-screen bg-gray-100">
+<?php include('./templates/header.php');?>
+
+<div class="flex min-h-screen">
+<?php include('sidebar2.php'); ?>
+<div class="flex-1 p-6 flex flex-col items-center justify-center">
   <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg">
     <h2 class="text-lg font-bold mb-4 text-center">Ajouter un produit</h2>
     <form id="add-product-form">
@@ -50,3 +54,14 @@
     </form>
   </div>
 </div>  
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const quillDescription = new Quill("#description", {
+      theme: "snow",
+      modules: {
+        toolbar: [["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }], ["link", "image"]],
+      },
+    });
+  });
+</script>
+<?php include('./templates/footer.php');?>

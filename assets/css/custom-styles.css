@@ -4,12 +4,7 @@
   transition: all 0.3s ease;
 }
 
-.hover-menu:hover {
-  background-color: #e3342f; /* Rouge */
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.25rem;
-}
+
 
 /* Responsiveness */
 @media (max-width: 768px) {
@@ -94,3 +89,9 @@ textarea:focus {
 }
 
 
+#signup-notification {
+  display: none; /* Masqué par défaut */
+}
+#signup-notification.visible {
+  display: flex; /* S’affiche en mode flex pour centrer */
+}

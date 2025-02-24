@@ -378,3 +378,66 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
   });
+
+ //Script AJAX pour charger la liste des catégories de recettes 
+ document.addEventListener("DOMContentLoaded", () => {
+  const viewRecipeCategoriesLink = document.getElementById("view-recipe-categories-link");
+  const contentContainer = document.getElementById("dynamic-content");
+
+  viewRecipeCategoriesLink.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    // Charger le contenu via AJAX
+    fetch("view-recipe-categories.php")
+      .then((response) => {
+        if (!response.ok) throw new Error("Erreur lors du chargement !");
+        return response.text();
+      })
+      .then((html) => {
+        contentContainer.innerHTML = html;
+      })
+      .catch((error) => {
+        console.error("Erreur :", error);
+        contentContainer.innerHTML = "<p class='text-red-500'>Impossible de charger le contenu.</p>";
+      });
+  });
+});
+
+//Script AJAX pour afficher le formulaire d'ajout de recette
+document.addEventListener("DOMContentLoaded", () => {
+  const addRecipeLink = document.getElementById("add-recipe-link");
+  const contentContainer = document.getElementById("dynamic-content");
+
+  addRecipeLink.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    // Charger le contenu via AJAX
+    fetch("add-recipe.php")
+      .then((response) => {
+        if (!response.ok) throw new Error("Erreur lors du chargement du formulaire !");
+        return response.text();
+      })
+      .then((html) => {
+        contentContainer.innerHTML = html;
+
+        // Initialiser Quill.js après l'injection du contenu
+        const quillIngredients = new Quill("#ingredients", {
+          theme: "snow",
+          modules: {
+            toolbar: [["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }], ["link", "image"]],
+          },
+        });
+        
+        const quillDescription = new Quill("#description", {
+          theme: "snow",
+          modules: {
+            toolbar: [["bold", "italic", "underline"], [{ list: "ordered" }, { list: "bullet" }], ["link", "image"]],
+          },
+        });
+      })
+      .catch((error) => {
+        console.error("Erreur :", error);
+        contentContainer.innerHTML = "<p class='text-red-500'>Impossible de charger le formulaire.</p>";
+      });
+  });
+});
