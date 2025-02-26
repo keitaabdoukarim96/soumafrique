@@ -109,7 +109,9 @@
             <p class="text-sm text-gray-600"><strong>Adresse:</strong> 6 rue charle lalances</p>
             <p class="text-sm text-gray-600"><strong>Horaire:</strong> 08H00 A 22H30</p>
             <div class="flex justify-between items-center mt-4">
-              <button class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR LES DÉTAILS</button>
+              <a href="details/detail-epice.php" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">
+                VOIR LES DÉTAILS
+              </a>
               <i class="fas fa-shopping-cart text-green-700 text-xl cursor-pointer"></i>
             </div>
           </div>
