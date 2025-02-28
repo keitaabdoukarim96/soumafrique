@@ -77,6 +77,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (mysqli_stmt_execute($stmt)) {
             $message = '<p class="text-green-500" id="success-message">Épice ajoutée avec succès !</p>';
+            echo "<script>
+                      setTimeout(() => {
+                          window.location.href = window.location.href;
+                      }, 3000);
+                      </script>";
         } else {
             $message = '<p class="text-red-500">Erreur lors de l’ajout de l’épice.</p>';
         }

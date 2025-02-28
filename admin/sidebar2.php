@@ -30,9 +30,7 @@ $role = $_SESSION['role'] ?? null; // Le rôle est récupéré de la session (d�
           <a href="validate-shop.php" class="flex items-center py-2 px-4 rounded hover:bg-gray-700">
             <i class="fas fa-check-circle mr-3"></i> Valider une boutique
           </a>
-          <a href="add-product.php" class="flex items-center py-2 px-4 rounded hover:bg-gray-700 " >
-            <i class="fas fa-plus mr-3"></i> Ajouter un produit
-          </a>
+          
         </div>
       </div>
       <!-- Catégories d'épices -->
@@ -49,6 +47,12 @@ $role = $_SESSION['role'] ?? null; // Le rôle est récupéré de la session (d�
           </a>
           <a href="add-spice-category.php" class="flex items-center py-2 px-4 rounded hover:bg-gray-700" >
             <i class="fas fa-plus mr-3"></i> Ajouter une catégorie
+          </a>
+          <a href="add-product.php" class="flex items-center py-2 px-4 rounded hover:bg-gray-700 " >
+            <i class="fas fa-plus mr-3"></i> Ajouter une Épice
+          </a>
+          <a href="vew-liste-product.php" class="flex items-center py-2 px-4 rounded hover:bg-gray-700 " >
+            <i class="fas fa-eye mr-3"></i> Voir les Épices
           </a>
         </div>
       </div>
