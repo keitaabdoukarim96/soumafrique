@@ -1,3 +1,46 @@
+<?php
+// Connexion à la base de données
+header('Content-Type: text/html; charset=utf-8');
+include('./admin/config/db.php');
+mysqli_set_charset($conn, "utf8mb4");
+
+// Nombre d'éléments par page
+$limit = 6;
+
+// Page courante pour épices
+$page_epices = isset($_GET['page_epices']) && is_numeric($_GET['page_epices']) ? intval($_GET['page_epices']) : 1;
+$offset_epices = ($page_epices - 1) * $limit;
+
+// Page courante pour recettes
+$page_recettes = isset($_GET['page_recettes']) && is_numeric($_GET['page_recettes']) ? intval($_GET['page_recettes']) : 1;
+$offset_recettes = ($page_recettes - 1) * $limit;
+
+// Récupérer les épices
+$sql_epices = "SELECT id, nom_epice, image_epice, epicerie_nom, adresse, horaires, disponibilite 
+               FROM epicerie 
+               LIMIT $limit OFFSET $offset_epices";
+$result_epices = mysqli_query($conn, $sql_epices);
+$epices = mysqli_fetch_all($result_epices, MYSQLI_ASSOC);
+
+// Nombre total d'épices
+$total_epices_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM epicerie");
+$total_epices = mysqli_fetch_assoc($total_epices_result)['count'];
+$total_pages_epices = ceil($total_epices / $limit);
+
+// Récupérer les recettes
+$sql_recettes = "SELECT id, recipe_name, main_image, cooking_time, servings, cooking_method, budget 
+                 FROM recette 
+                 LIMIT $limit OFFSET $offset_recettes";
+$result_recettes = mysqli_query($conn, $sql_recettes);
+$recettes = mysqli_fetch_all($result_recettes, MYSQLI_ASSOC);
+
+// Nombre total de recettes
+$total_recettes_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM recette");
+$total_recettes = mysqli_fetch_assoc($total_recettes_result)['count'];
+$total_pages_recettes = ceil($total_recettes / $limit);
+?>
+
+
 <!--Header start-->
 <?php include('./templates/header.php'); ?>
 <!--Header end-->
@@ -119,112 +162,74 @@
     </div>
   </aside>
 
-    <!-- Contenu principal -->
-  <div class="w-3/4 p-4 ">
+  <!-- Contenu principal -->
+  <div class="w-3/4 p-4">
       <!-- Section épices -->
-  <section class="">
-    <h2 class="text-2xl font-bold mb-6 text-center underline">Les Épices</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
-      <!-- Exemple de carte épice -->
-      <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-        <img src="assets/img/product/p3.png" alt="Poudre de Kinkeliba" class="w-full h-48 object-cover">
-        <div class="p-4">
-          <h3 class="text-lg font-bold text-gray-800">Nom: Poudre de Kinkeliba</h3>
-          <p class="text-sm text-gray-600"><strong>Boutique:</strong> Smach Épicerie</p>
-          <p class="text-sm text-gray-600"><strong>Adresse:</strong> 6 rue charle lalances</p>
-          <p class="text-sm text-gray-600"><strong>Horaire:</strong> 08H00 A 22H30</p>
-          <div class="flex justify-between items-center mt-4">
-            <button class="btn-gradient py-2 px-4 text-white rounded-lg font-bold"><a href="./details/detail-epice.php">VOIR LES DÉTAILS</a></button>
-            <a href="./panier/panier.php" class="text-green-700">
-              <i class="fas fa-shopping-cart text-green-700 text-xl cursor-pointer"></i>
-          </a>
-          </div>
-        </div>
-      </div>
-      <!-- Répliquez pour d'autres épices -->
-      <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-        <img src="assets/img/product/p3.png" alt="Poivre en Poudre" class="w-full h-48 object-cover">
-        <div class="p-4">
-          <h3 class="text-lg font-bold text-gray-800">Nom: Poivre en Poudre</h3>
-          <p class="text-sm text-gray-600"><strong>Boutique:</strong> Smach Épicerie</p>
-          <p class="text-sm text-gray-600"><strong>Adresse:</strong> 27 faubourg besançon</p>
-          <p class="text-sm text-gray-600"><strong>Horaire:</strong> 08H00 A 22H30</p>
-          <div class="flex justify-between items-center mt-4">
-          <button class="btn-gradient py-2 px-4 text-white rounded-lg font-bold"><a href="./details/detail-epice.php">VOIR LES DÉTAILS</a></button>
-          <a href="./panier/panier.php" class="text-green-700">
-              <i class="fas fa-shopping-cart text-green-700 text-xl cursor-pointer"></i>
-          </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Répliquez pour d'autres épices -->
-      <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-        <img src="assets/img/product/p3.png" alt="Poivre en Poudre" class="w-full h-48 object-cover">
-        <div class="p-4">
-          <h3 class="text-lg font-bold text-gray-800">Nom: Poivre en Poudre</h3>
-          <p class="text-sm text-gray-600"><strong>Boutique:</strong> Smach Épicerie</p>
-          <p class="text-sm text-gray-600"><strong>Adresse:</strong> 27 faubourg besançon</p>
-          <p class="text-sm text-gray-600"><strong>Horaire:</strong> 08H00 A 22H30</p>
-          <div class="flex justify-between items-center mt-4">
-            <button class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR LES DÉTAILS</button>
-            <a href="./panier/panier.php" class="text-green-700">
-              <i class="fas fa-shopping-cart text-green-700 text-xl cursor-pointer"></i>
-          </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Section recettes -->
-  <section class="mt-12">
-    <h2 class="text-2xl font-bold mb-6 text-center underline">Les Recettes</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
-      <!-- Exemple de carte recette -->
-      <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-          <img src="assets/img/recette-1.png" alt="Recette Yassa" class="w-full h-48 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-800">Nom: Yassa de Poulet</h3>
-            <p class="text-sm text-gray-600 mt-2"><strong>Ingrédients:</strong> Poulet, oignons, citron...</p>
-            <p class="text-sm text-gray-600"><strong>Durée de cuisson:</strong> 30 à 40 min</p>
-            <p class="text-sm text-gray-600"><strong>Nombre de personnes:</strong> 3 à 4</p>
-            <p class="text-sm text-gray-600"><strong>Mode de cuisson :</strong> Les mor..</p>
-            <div class="flex justify-center items-center mt-4">
-              <button class="btn-gradient py-2 px-6 text-white rounded-lg font-bold"><a href="./details/detail-recette.php">VOIR LES DÉTAILS</a></button>
+      <section>
+        <h2 class="text-2xl font-bold mb-6 text-center underline">Les Épices</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+          <?php foreach ($epices as $epice): ?>
+            <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+              <img src="./admin/uploads/<?= htmlspecialchars($epice['image_epice']); ?>" alt="<?= htmlspecialchars($epice['nom_epice']); ?>" class="w-full h-48 object-cover">
+              <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800"><?= htmlspecialchars($epice['nom_epice']); ?></h3>
+                <p class="text-sm text-gray-600"><strong>Boutique:</strong> <?= htmlspecialchars($epice['epicerie_nom']); ?></p>
+                <p class="text-sm text-gray-600"><strong>Adresse:</strong> <?= htmlspecialchars($epice['adresse']); ?></p>
+                <p class="text-sm text-gray-600"><strong>Horaire:</strong> <?= htmlspecialchars($epice['horaires']); ?></p>
+                <p class="text-sm <?= isset($epice['disponibilite']) && $epice['disponibilite'] == 'en_stock' ? 'text-green-600' : 'text-red-600'; ?>">
+                   <strong>Disponibilité :</strong> <?= isset($epice['disponibilite']) && $epice['disponibilite'] == 'en_stock' ? 'En stock' : 'Rupture de stock'; ?>
+                </p>
+                <div class="flex justify-between items-center mt-4">
+                  <a href="./details/detail-epice.php?id=<?= $epice['id']; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR LES DÉTAILS</a>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-        <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-          <img src="assets/img/recette-1.png" alt="Recette Yassa" class="w-full h-48 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-800">Nom: Yassa de Poulet</h3>
-            <p class="text-sm text-gray-600 mt-2"><strong>Ingrédients:</strong> Poulet, oignons, citron...</p>
-            <p class="text-sm text-gray-600"><strong>Durée de cuisson:</strong> 30 à 40 min</p>
-            <p class="text-sm text-gray-600"><strong>Nombre de personnes:</strong> 3 à 4</p>
-            <p class="text-sm text-gray-600"><strong>Mode de cuisson :</strong> Les mor..</p>
-            <div class="flex justify-center items-center mt-4">
-            <button class="btn-gradient py-2 px-6 text-white rounded-lg font-bold"><a href="./details/detail-recette.php">VOIR LES DÉTAILS</a></button>
-            </div>
-          </div>
+          <?php endforeach; ?>
         </div>
 
-        <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-          <img src="assets/img/recette-1.png" alt="Recette Yassa" class="w-full h-48 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-800">Nom: Yassa de Poulet</h3>
-            <p class="text-sm text-gray-600 mt-2"><strong>Ingrédients:</strong> Poulet, oignons, citron...</p>
-            <p class="text-sm text-gray-600"><strong>Durée de cuisson:</strong> 30 à 40 min</p>
-            <p class="text-sm text-gray-600"><strong>Nombre de personnes:</strong> 3 à 4</p>
-            <p class="text-sm text-gray-600"><strong>Mode de cuisson :</strong> Les mor..</p>
-            <div class="flex justify-center items-center mt-4">
-            <button class="btn-gradient py-2 px-6 text-white rounded-lg font-bold"><a href="./details/detail-recette.php">VOIR LES DÉTAILS</a></button>
-            </div>
-          </div>
+        <!-- Pagination épices -->
+        <div class="flex justify-center mt-8 space-x-4">
+          <?php if ($page_epices > 1): ?>
+            <a href="?page_epices=<?= $page_epices - 1; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Précédent</a>
+          <?php endif; ?>
+          <?php if ($page_epices < $total_pages_epices): ?>
+            <a href="?page_epices=<?= $page_epices + 1; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Suivant</a>
+          <?php endif; ?>
         </div>
-    </div>
-  </section>
-      
+      </section>
+
+      <!-- Section recettes -->
+      <section class="mt-12">
+        <h2 class="text-2xl font-bold mb-6 text-center underline">Les Recettes</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+          <?php foreach ($recettes as $recette): ?>
+            <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+              <img src="./admin/<?= htmlspecialchars($recette['main_image']); ?>" alt="<?= htmlspecialchars($recette['recipe_name']); ?>" class="w-full h-48 object-cover">
+              <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800"><?= htmlspecialchars($recette['recipe_name']); ?></h3>
+                <p class="text-sm text-gray-600"><strong>Durée:</strong> <?= htmlspecialchars($recette['cooking_time']); ?> min</p>
+                <p class="text-sm text-gray-600"><strong>Portions:</strong> <?= htmlspecialchars($recette['servings']); ?> pers.</p>
+                <p class="text-sm text-gray-600"><strong>Mode de cuisson:</strong> <?= htmlspecialchars($recette['cooking_method']); ?></p>
+                <p class="text-sm text-gray-600"><strong>Budget:</strong> <?= htmlspecialchars($recette['budget']); ?> €</p>
+                
+                <div class="flex justify-center items-center mt-4">
+                  <a href="./details/detail-recette.php?id=<?= $recette['id']; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR LES DÉTAILS</a>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+
+        <!-- Pagination recettes -->
+        <div class="flex justify-center mt-8 space-x-4">
+          <?php if ($page_recettes > 1): ?>
+            <a href="?page_recettes=<?= $page_recettes - 1; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Précédent</a>
+          <?php endif; ?>
+          <?php if ($page_recettes < $total_pages_recettes): ?>
+            <a href="?page_recettes=<?= $page_recettes + 1; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Suivant</a>
+          <?php endif; ?>
+        </div>
+      </section>
     </div>
 </div>
 

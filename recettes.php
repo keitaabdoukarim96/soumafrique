@@ -1,3 +1,53 @@
+<?php
+// Connexion à la base de données
+header('Content-Type: text/html; charset=utf-8');
+include('./admin/config/db.php');
+mysqli_set_charset($conn, "utf8mb4");
+
+// Nombre de recettes par page
+$limit = 6;
+
+if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
+    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
+    $offset = ($page - 1) * $limit;
+
+    // Récupérer les recettes
+    $sql = "SELECT id, recipe_name, main_image, cooking_time, servings, cooking_method, budget, description 
+            FROM recette 
+            LIMIT $limit OFFSET $offset";
+    $result = mysqli_query($conn, $sql);
+
+    // Compter le nombre total de pages
+    $count_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM recette");
+    $total_count = mysqli_fetch_assoc($count_result)['count'];
+    $total_pages = ceil($total_count / $limit);
+
+    // Préparer les données JSON
+    $data = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $data[] = [
+            'id' => intval($row['id']),
+            'recipe_name' => htmlspecialchars($row['recipe_name']),
+            'main_image' => htmlspecialchars($row['main_image']),
+            'cooking_time' => htmlspecialchars($row['cooking_time']),
+            'servings' => htmlspecialchars($row['servings']),
+            'cooking_method' => htmlspecialchars($row['cooking_method']),
+            'budget' => htmlspecialchars($row['budget']),
+            'description' => htmlspecialchars($row['description']),
+        ];
+    }
+
+    echo json_encode(['data' => $data, 'total_pages' => $total_pages]);
+    exit();
+}
+
+// Calcul du total des pages pour la pagination (non utilisé dans AJAX)
+$total_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM recette");
+$total_count = mysqli_fetch_assoc($total_result)['count'];
+$total_pages = ceil($total_count / $limit);
+?>
+
+
 <!--Header start-->
 <?php include('./templates/header.php'); ?>
 <!--Header end-->
@@ -85,53 +135,18 @@
     </aside>
 
     <!-- Contenu principal -->
-    <div class="w-3/4 p-4">
+    <div class="w-full lg:w-3/4 p-4">
       <h2 class="text-2xl font-bold mb-6 text-center underline">Les Recettes</h2>
-      <!-- Grille des recettes -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        <!-- Exemple de carte recette -->
-        
-        <!-- Répliquez ce bloc pour d'autres recettes -->
-        <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-          <img src="assets/img/recette-1.png" alt="Recette Sauce Arachide" class="w-full h-48 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-800">Nom: Sauce Arachide</h3>
-            <p class="text-sm text-gray-600 mt-2"><strong>Ingrédients:</strong> Arachide, viande...</p>
-            <p class="text-sm text-gray-600"><strong>Durée de cuisson:</strong> 45 min</p>
-            <p class="text-sm text-gray-600"><strong>Nombre de personnes:</strong> 5 à 6</p>
-            <p class="text-sm text-gray-600"><strong>Mode de cuisson :</strong> Les mor..</p>
-            <div class="flex justify-center items-center mt-4">
-              <button class="btn-gradient py-2 px-6 text-white rounded-lg font-bold">VOIR LES DÉTAILS</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-          <img src="assets/img/recette-1.png" alt="Recette Sauce Arachide" class="w-full h-48 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-800">Nom: Sauce Arachide</h3>
-            <p class="text-sm text-gray-600 mt-2"><strong>Ingrédients:</strong> Arachide, viande...</p>
-            <p class="text-sm text-gray-600"><strong>Durée de cuisson:</strong> 45 min</p>
-            <p class="text-sm text-gray-600"><strong>Nombre de personnes:</strong> 5 à 6</p>
-            <p class="text-sm text-gray-600"><strong>Mode de cuisson :</strong> Les mor..</p>
-            <div class="flex justify-center items-center mt-4">
-              <button class="btn-gradient py-2 px-6 text-white rounded-lg font-bold">VOIR LES DÉTAILS</button>
-            </div>
-          </div>
-        </div>
-        <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-          <img src="assets/img/recette-1.png" alt="Recette Sauce Arachide" class="w-full h-48 object-cover">
-          <div class="p-4">
-            <h3 class="text-lg font-bold text-gray-800">Nom: Sauce Arachide</h3>
-            <p class="text-sm text-gray-600 mt-2"><strong>Ingrédients:</strong> Arachide, viande...</p>
-            <p class="text-sm text-gray-600"><strong>Durée de cuisson:</strong> 45 min</p>
-            <p class="text-sm text-gray-600"><strong>Nombre de personnes:</strong> 5 à 6</p>
-            <p class="text-sm text-gray-600"><strong>Mode de cuisson :</strong> Les mor..</p>
-            <div class="flex justify-center items-center mt-4">
-              <button class="btn-gradient py-2 px-6 text-white rounded-lg font-bold">VOIR LES DÉTAILS</button>
-            </div>
-          </div>
-        </div>
+      <div id="recettes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Les recettes seront chargées ici par AJAX -->
+      </div>
+      <div class="flex justify-center mt-8 space-x-4">
+        <button id="prev-btn" class="bg-green-700 text-white px-4 py-2 rounded-lg" data-page="1">
+          <i class="fas fa-arrow-left"></i>
+        </button>
+        <button id="next-btn" class="bg-green-700 text-white px-4 py-2 rounded-lg" data-page="2">
+          <i class="fas fa-arrow-right"></i>
+        </button>
       </div>
     </div>
   </div>
@@ -140,3 +155,51 @@
 <!-- Footer start-->
 <?php include('./templates/footer.php'); ?>
 <!--Footer end-->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const recettesContainer = document.getElementById('recettes-container');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  let currentPage = 1;
+
+  function loadRecettes(page) {
+    fetch(`recettes.php?ajax=1&page=${page}`)
+      .then(response => response.json())
+      .then(data => {
+        recettesContainer.innerHTML = data.data.map(recette => `
+          <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+            <img src="${recette.main_image.replace('./uploads/', './admin/uploads/')}" alt="${recette.recipe_name}" class="w-full h-48 object-cover">
+            <div class="p-4">
+              <h3 class="text-lg font-bold text-gray-800">${recette.recipe_name}</h3>
+              <p class="text-sm text-gray-600"><strong>Durée:</strong> ${recette.cooking_time} min</p>
+              <p class="text-sm text-gray-600"><strong>Portions:</strong> ${recette.servings} personnes</p>
+              <p class="text-sm text-gray-600"><strong>Mode de cuisson:</strong> ${recette.cooking_method}</p>
+              <p class="text-sm text-gray-600"><strong>Budget:</strong> ${recette.budget}€</p>
+              <div class="flex justify-center items-center mt-4">
+                <a href="details/detail-recette.php?id=${recette.id}" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR LES DÉTAILS</a>
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        prevBtn.style.display = page === 1 ? 'none' : 'block';
+        nextBtn.style.display = page >= data.total_pages ? 'none' : 'block';
+      })
+      .catch(error => console.error('Erreur lors du chargement des recettes:', error));
+  }
+
+  prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage -= 1;
+      loadRecettes(currentPage);
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    currentPage += 1;
+    loadRecettes(currentPage);
+  });
+
+  loadRecettes(currentPage);
+});
+</script>

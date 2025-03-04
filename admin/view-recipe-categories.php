@@ -1,8 +1,20 @@
-<!-- Contenu du fichier view-recipe-categories.php -->
-<div class="flex justify-center items-center min-h-screen bg-gray-100">
-  <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-4xl">
+<?php
+header('Content-Type: text/html; charset=utf-8');
+include('../admin/config/db.php');
+mysqli_set_charset($conn, "utf8mb4");
+include('./templates/header.php');
+
+// Récupérer les catégories depuis la base de données
+$query = "SELECT * FROM categorie_recette ORDER BY id ASC";
+$result = mysqli_query($conn, $query);
+?>
+
+<div class="flex min-h-screen">
+<?php include('sidebar2.php'); ?>
+<div class="flex-1 p-6">
+  <div class="bg-white shadow-lg rounded-lg p-6 w-full">
     <h2 class="text-lg font-bold mb-4 text-center">Catégories de Recettes Africaines</h2>
-    <table class="min-w-full text-sm border border-gray-300">
+    <table class="w-full text-sm border border-gray-300">
       <thead class="bg-gray-200 text-gray-600 uppercase text-xs">
         <tr>
           <th class="py-3 px-4 text-left border-b">ID</th>
@@ -12,44 +24,38 @@
         </tr>
       </thead>
       <tbody class="text-gray-700">
-        <!-- Liste des catégories africaines -->
+        <?php while ($row = mysqli_fetch_assoc($result)) { ?>
         <tr class="border-b hover:bg-gray-100">
-          <td class="py-3 px-4">1</td>
-          <td class="py-3 px-4 font-semibold">Plats Traditionnels</td>
-          <td class="py-3 px-4">Recettes emblématiques des différentes régions d'Afrique</td>
-          <td class="py-3 px-4 text-center">
-            <button class="bg-blue-500 text-white py-1 px-2 rounded text-xs hover:bg-blue-600">Modifier</button>
-            <button class="bg-red-500 text-white py-1 px-2 rounded text-xs hover:bg-red-600">Supprimer</button>
+          <td class="py-3 px-4"><?php echo htmlspecialchars($row['id']); ?></td>
+          <td class="py-3 px-4 font-semibold"><?php echo htmlspecialchars($row['nom']); ?></td>
+          <td class="py-3 px-4"><?php echo htmlspecialchars($row['description']); ?></td>
+          <td class="border py-3 px-4 text-center"> 
+            <div class="flex items-center justify-center space-x-4">
+                <!-- Icône Voir -->
+                <a href="view-category.php?id=<?= $row['id'] ?>" 
+                   class="inline-block text-blue-500 hover:text-blue-700">
+                    <i class="fa fa-eye text-xl"></i>
+                </a>
+                <!-- Icône Modifier -->
+                <a href="edit-category.php?id=<?= $row['id'] ?>" 
+                   class="inline-block text-yellow-500 hover:text-yellow-700">
+                    <i class="fa fa-edit text-xl"></i>
+                </a>
+                <!-- Icône Supprimer -->
+                <a href="?delete_id=<?= $row['id'] ?>" 
+                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?');"
+                   class="inline-block text-red-500 hover:text-red-700">
+                    <i class="fa fa-trash text-xl"></i>
+                </a>
+            </div>
           </td>
         </tr>
-        <tr class="border-b hover:bg-gray-100">
-          <td class="py-3 px-4">2</td>
-          <td class="py-3 px-4 font-semibold">Soupes & Ragoûts</td>
-          <td class="py-3 px-4">Les soupes et plats mijotés typiques d'Afrique</td>
-          <td class="py-3 px-4 text-center">
-            <button class="bg-blue-500 text-white py-1 px-2 rounded text-xs hover:bg-blue-600">Modifier</button>
-            <button class="bg-red-500 text-white py-1 px-2 rounded text-xs hover:bg-red-600">Supprimer</button>
-          </td>
-        </tr>
-        <tr class="border-b hover:bg-gray-100">
-          <td class="py-3 px-4">3</td>
-          <td class="py-3 px-4 font-semibold">Grillades & Barbecues</td>
-          <td class="py-3 px-4">Les viandes et poissons grillés, spécialités africaines</td>
-          <td class="py-3 px-4 text-center">
-            <button class="bg-blue-500 text-white py-1 px-2 rounded text-xs hover:bg-blue-600">Modifier</button>
-            <button class="bg-red-500 text-white py-1 px-2 rounded text-xs hover:bg-red-600">Supprimer</button>
-          </td>
-        </tr>
-        <tr class="border-b hover:bg-gray-100">
-          <td class="py-3 px-4">4</td>
-          <td class="py-3 px-4 font-semibold">Boissons & Jus Naturels</td>
-          <td class="py-3 px-4">Les boissons africaines à base de fruits et d’épices</td>
-          <td class="py-3 px-4 text-center">
-            <button class="bg-blue-500 text-white py-1 px-2 rounded text-xs hover:bg-blue-600">Modifier</button>
-            <button class="bg-red-500 text-white py-1 px-2 rounded text-xs hover:bg-red-600">Supprimer</button>
-          </td>
-        </tr>
+        <?php } ?>
       </tbody>
     </table>
   </div>
 </div>
+</div>
+
+<?php mysqli_close($conn); ?>
+<?php include('./templates/footer.php'); ?>

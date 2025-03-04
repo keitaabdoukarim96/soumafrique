@@ -62,11 +62,15 @@ $role = $_SESSION['role'] ?? null; // Le rôle est récupéré de la session (d�
           <i class="fas fa-utensils mr-3"></i> Les recettes
           <i class="fas fa-chevron-down ml-auto transform group-hover:rotate-180"></i>
         </a>
+      
         <div class="hidden pl-8 space-y-2 group-hover:block">
-          <a href="#" class="flex items-center py-2 px-4 rounded hover:bg-gray-700" >
+        <a href="vew-liste-recette.php" class="flex items-center py-2 px-4 rounded hover:bg-gray-700" >
+            <i class="fas fa-eye mr-3"></i> Voir les recettes
+          </a>  
+        <a href="view-recipe-categories.php" class="flex items-center py-2 px-4 rounded hover:bg-gray-700" >
             <i class="fas fa-list mr-3"></i> Voir les catégories de recettes
           </a>
-          <a href="#" class="flex items-center py-2 px-4 rounded hover:bg-gray-700" >
+          <a href="add-recette.php" class="flex items-center py-2 px-4 rounded hover:bg-gray-700" >
             <i class="fas fa-plus mr-3"></i> Ajouter une recette
           </a>
         </div>

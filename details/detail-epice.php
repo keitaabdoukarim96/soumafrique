@@ -12,37 +12,61 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $id = intval($_GET['id']);
 
 // Requête pour récupérer les détails de l'épice
-$sql = "SELECT * FROM epicerie WHERE id = $id";
-$result = mysqli_query($conn, $sql);
+$sql = "SELECT * FROM epicerie WHERE id = ?";
+$stmt = mysqli_prepare($conn, $sql);
+mysqli_stmt_bind_param($stmt, 'i', $id);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
 
 if (!$result || mysqli_num_rows($result) == 0) {
     die("Épice non trouvée.");
 }
 
 $epice = mysqli_fetch_assoc($result);
+$category_id = $epice['categorie_id'] ?? null; // Récupérer la catégorie si elle existe
+
+// Requête pour récupérer d'autres épices de la même catégorie (max 3)
+if ($category_id) {
+    $sql_similaires = "SELECT id, nom_epice, image_epice, prix, epicerie_nom, horaires, adresse, disponibilite 
+                       FROM epicerie 
+                       WHERE categorie_id = ? AND id != ? 
+                       ORDER BY RAND() LIMIT 3";
+    $stmt = mysqli_prepare($conn, $sql_similaires);
+    mysqli_stmt_bind_param($stmt, 'ii', $category_id, $id);
+} else {
+    // Si pas de catégorie, afficher des épices aléatoires
+    $sql_similaires = "SELECT id, nom_epice, image_epice, prix, epicerie_nom, horaires, adresse, disponibilite 
+                       FROM epicerie 
+                       WHERE id != ? 
+                       ORDER BY RAND() LIMIT 3";
+    $stmt = mysqli_prepare($conn, $sql_similaires);
+    mysqli_stmt_bind_param($stmt, 'i', $id);
+}
+
+mysqli_stmt_execute($stmt);
+$similaires_result = mysqli_stmt_get_result($stmt);
+$epices_similaires = [];
+while ($row = mysqli_fetch_assoc($similaires_result)) {
+    $epices_similaires[] = $row;
+}
+
+mysqli_stmt_close($stmt);
 
 // Fonction pour transformer le HTML en texte formaté
 function htmlToText($html) {
-    // Remplace les balises <h2> et <h3> par des titres en majuscules avec des lignes en dessous
     $html = preg_replace('/<h2[^>]*>(.*?)<\/h2>/i', "\n\n$1\n" . str_repeat('-', 40) . "\n", $html);
-
-
-    // Remplace les balises <br> par des retours à la ligne
     $html = preg_replace('/<br[^>]*>/', "\n", $html);
-
-    // Supprime toutes les autres balises HTML
-    $html = strip_tags($html);
-
-    return trim($html);
+    return strip_tags($html);
 }
 ?>
+
 <!--Header start-->
 <?php include('../templates/header.php'); ?>
 <!--Header end-->
 
 <main class="flex-grow mt-20 mb-20 px-4">
   <div class="container mx-auto">
-        <!-- Chemin de navigation (Breadcrumb) -->
+    <!-- Chemin de navigation (Breadcrumb) -->
     <nav class="text-sm mb-4 mt-20" style="background-color: #f9f9f9; padding: 10px;">
         <a href="/soumafrique/index.php" class="text-green-700 font-bold">Accueil</a> >
         <a href="/soumafrique/epicerie.php" class="text-green-700 font-bold">Épicerie</a> >
@@ -77,12 +101,41 @@ function htmlToText($html) {
         </div>
       </div>
     </section>
+
     <!-- Détails supplémentaires -->
     <section class="mt-12">
+      <h2 class="text-lg font-bold mb-4">Description</h2>
       <p class="text-gray-700 mb-4">
         <?= nl2br(htmlToText($epice['details'])); ?>
       </p>
     </section>
+
+    <!-- Autres Épices Similaires -->
+    <?php if (!empty($epices_similaires)): ?>
+      <section class="mt-12">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Autres Épices</h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <?php foreach ($epices_similaires as $epice_similaire): ?>
+            <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+              <img src="../admin/uploads/<?= htmlspecialchars($epice_similaire['image_epice']); ?>" alt="<?= htmlspecialchars($epice_similaire['nom_epice']); ?>" class="w-full h-48 object-cover">
+              <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800"><?= htmlspecialchars($epice_similaire['nom_epice']); ?></h3>
+                <p class="text-sm text-gray-600"><strong>Prix :</strong> <?= htmlspecialchars($epice_similaire['prix']); ?> €</p>
+                <p class="text-sm text-gray-600"><strong>Boutique :</strong> <?= htmlspecialchars($epice_similaire['epicerie_nom']); ?></p>
+                <p class="text-sm text-gray-600"><strong>Adresse :</strong> <?= htmlspecialchars($epice_similaire['adresse']); ?></p>
+                <p class="text-sm text-gray-600"><strong>Horaire :</strong> <?= htmlspecialchars($epice_similaire['horaires']); ?></p>
+                <p class="text-sm <?= $epice_similaire['disponibilite'] == 'en_stock' ? 'text-green-600' : 'text-red-600'; ?>">
+                  <strong>Disponibilité :</strong> <?= $epice_similaire['disponibilite'] == 'en_stock' ? 'En stock' : 'Rupture de stock'; ?>
+                </p>
+                <div class="flex justify-center items-center mt-4">
+                  <a href="detail-epice.php?id=<?= $epice_similaire['id'] ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR DÉTAILS</a>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+      </section>
+    <?php endif; ?>
   </div>
 </main>
 

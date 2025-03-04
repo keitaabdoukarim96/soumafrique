@@ -4,16 +4,36 @@ include('../admin/config/db.php');
 mysqli_set_charset($conn, "utf8mb4");
 include('./templates/header.php');
 
+// Gérer la suppression d'une épice
+$message = '';
+if (isset($_GET['delete_id']) && is_numeric($_GET['delete_id'])) {
+    $delete_id = intval($_GET['delete_id']);
+
+    // Préparer la suppression
+    $delete_sql = "DELETE FROM epicerie WHERE id = ?";
+    $stmt = mysqli_prepare($conn, $delete_sql);
+    mysqli_stmt_bind_param($stmt, 'i', $delete_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        $message = '<p class="text-green-500 text-center" id="success-message">Épice supprimée avec succès.</p>';
+        echo "<script>
+                setTimeout(() => {
+                    window.location.href = '".$_SERVER['PHP_SELF']."';
+                }, 3000);
+              </script>";
+    } else {
+        $message = '<p class="text-red-500 text-center">Erreur lors de la suppression de l\'épice.</p>';
+    }
+
+    mysqli_stmt_close($stmt);
+}
+
 // Nombre d'éléments par page
 $limit = 5;
-
-// Récupérer la page courante à partir de l'URL, ou 1 si non défini
 $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
-
-// Calculer l'offset
 $offset = ($page - 1) * $limit;
 
-// Récupérer les données des épices avec une limite et un offset
+// Récupérer les épices avec pagination
 $sql = "
     SELECT 
         epicerie.id,
@@ -42,7 +62,10 @@ $total_pages = ceil($total_rows / $limit);
 <div class="flex min-h-screen">
     <?php include('sidebar2.php'); ?>
     <div class="flex-1 p-6">
-        <h1 class="text-2xl font-bold mb-6 text-center">LISTE DES EPICES</h1>
+        <h1 class="text-2xl font-bold mb-6 text-center">LISTE DES ÉPICES</h1>
+
+        <!-- Affichage des messages -->
+        <?= $message ?>
 
         <div class="overflow-x-auto">
             <table class="table-auto border-collapse border border-gray-300 w-full">
@@ -77,40 +100,37 @@ $total_pages = ceil($total_rows / $limit);
                                 ?>
                             </td>
                             <td class="border py-3 px-4 text-center">
-    <!-- Conteneur pour disposer les icônes horizontalement avec espace -->
-    <div class="flex items-center justify-center space-x-4">
-        <!-- Icône Voir -->
-        <a href="view-epice.php?id=<?= $row['id'] ?>" 
-           class="inline-block text-blue-500 hover:text-blue-700">
-            <i class="fa fa-eye text-xl"></i>
-        </a>
-        <!-- Icône Modifier -->
-        <a href="edit-epice.php?id=<?= $row['id'] ?>" 
-           class="inline-block text-yellow-500 hover:text-yellow-700">
-            <i class="fa fa-edit text-xl"></i>
-        </a>
-        <!-- Icône Supprimer -->
-        <a href="delete-epice.php?id=<?= $row['id'] ?>" 
-           class="inline-block text-red-500 hover:text-red-700">
-            <i class="fa fa-trash text-xl"></i>
-        </a>
-    </div>
-</td>
-
+                                <div class="flex items-center justify-center space-x-4">
+                                    <!-- Icône Voir -->
+                                    <a href="view-epice.php?id=<?= $row['id'] ?>" 
+                                       class="inline-block text-blue-500 hover:text-blue-700">
+                                        <i class="fa fa-eye text-xl"></i>
+                                    </a>
+                                    <!-- Icône Modifier -->
+                                    <a href="edit-epice.php?id=<?= $row['id'] ?>" 
+                                       class="inline-block text-yellow-500 hover:text-yellow-700">
+                                        <i class="fa fa-edit text-xl"></i>
+                                    </a>
+                                    <!-- Icône Supprimer -->
+                                    <a href="?delete_id=<?= $row['id'] ?>" 
+                                       onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette épice ?');"
+                                       class="inline-block text-red-500 hover:text-red-700">
+                                        <i class="fa fa-trash text-xl"></i>
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>
             </table>
         </div>
 
-        <!-- Boutons de pagination -->
+        <!-- Pagination -->
         <div class="flex justify-end mt-4 space-x-2">
-            <!-- Bouton Retour -->
             <?php if ($page > 1): ?>
                 <a href="?page=<?= $page - 1 ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Retour</a>
             <?php endif; ?>
 
-            <!-- Bouton Suivant -->
             <?php if ($page < $total_pages): ?>
                 <a href="?page=<?= $page + 1 ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Suivant</a>
             <?php endif; ?>
@@ -119,3 +139,15 @@ $total_pages = ceil($total_rows / $limit);
 </div>
 
 <?php include('./templates/footer.php'); ?>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Disparition du message après 3 secondes
+    setTimeout(() => {
+        let message = document.getElementById("success-message");
+        if (message) {
+            message.style.display = "none";
+        }
+    }, 3000);
+});
+</script>
