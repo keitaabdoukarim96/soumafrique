@@ -2,7 +2,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 session_start();
-include('../admin/config/db.php');
+include('admin/config/db.php');
 
 header('Content-Type: application/json'); // Important pour s'assurer qu'on envoie du JSON
 

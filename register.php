@@ -1,6 +1,6 @@
 <?php
 session_start();
-include('../admin/config/db.php');
+include('admin/config/db.php');
 
 $message = ""; // Message d'erreur ou de succès
 

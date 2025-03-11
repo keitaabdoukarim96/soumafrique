@@ -66,11 +66,11 @@ $total_pages = ceil($total_rows / $limit);
                         <tr class="hover:bg-gray-100">
                             <td class="border py-3 px-4"><?= htmlspecialchars($row['recipe_name']) ?></td>
                             <td class="border py-3 px-4 text-center">
-                                <?php if (!empty($row['main_image'])): ?>
-                                    <img src="<?= htmlspecialchars(str_replace('./uploads/', 'uploads/', $row['main_image'])) ?>" 
-                                         alt="<?= htmlspecialchars($row['recipe_name']) ?>" 
-                                         class="w-16 h-16 object-cover rounded">
-                                <?php endif; ?>
+                            <?php if (!empty($row['main_image'])): ?>
+                                <img src="uploads/<?= htmlspecialchars(basename($row['main_image'])) ?>" 
+                                    alt="<?= htmlspecialchars($row['recipe_name']) ?>" 
+                                    class="w-16 h-16 object-cover rounded">
+                            <?php endif; ?>
                             </td>
                             <td class="border py-3 px-4 text-center"><?= htmlspecialchars($row['categorie']) ?></td>
                             <td class="border py-3 px-4 text-center"><?= htmlspecialchars($row['cooking_time']) ?></td>

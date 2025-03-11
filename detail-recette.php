@@ -1,9 +1,6 @@
 <?php
 // Connexion à la base de données
-header('Content-Type: text/html; charset=utf-8');
-include('../admin/config/db.php');
-mysqli_set_charset($conn, "utf8mb4");
-
+include('./templates/header.php');
 // Vérification que l'ID est fourni
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     die("Recette non spécifiée.");
@@ -60,9 +57,7 @@ while ($row = mysqli_fetch_assoc($similaires_result)) {
 mysqli_stmt_close($stmt);
 ?>
 
-<!--Header start-->
-<?php include('../templates/header.php'); ?>
-<!--Header end-->
+
 
 <main class="flex-grow mt-20 mb-20">
   <div class="container mx-auto px-4">
@@ -78,7 +73,7 @@ mysqli_stmt_close($stmt);
       <?= htmlspecialchars($recette['recipe_name']); ?>
     </h1>
     <div class="flex justify-center mb-8 mt-10">
-      <img src="../admin/<?= htmlspecialchars($recette['main_image']); ?>" alt="<?= htmlspecialchars($recette['recipe_name']); ?>" class="w-full max-w-md rounded-lg shadow-md">
+      <img src="admin/uploads/<?= htmlspecialchars($recette['main_image']); ?>" alt="<?= htmlspecialchars($recette['recipe_name']); ?>" class="w-full max-w-md rounded-lg shadow-md">
     </div>
 
     <!-- Infos sur la recette -->
@@ -107,7 +102,7 @@ mysqli_stmt_close($stmt);
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
         <?php foreach ($ingredients as $ingredient): ?>
           <div class="text-center">
-            <img src="../admin/<?= htmlspecialchars($ingredient['ingredient_image']); ?>" alt="<?= htmlspecialchars($ingredient['ingredient_name']); ?>" class="w-20 h-20 mx-auto">
+            <img src="admin/<?= htmlspecialchars($ingredient['ingredient_image']); ?>" alt="<?= htmlspecialchars($ingredient['ingredient_name']); ?>" class="w-20 h-20 mx-auto">
             <p class="mt-2"><?= htmlspecialchars($ingredient['ingredient_name']); ?></p>
           </div>
         <?php endforeach; ?>
@@ -129,7 +124,7 @@ mysqli_stmt_close($stmt);
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <?php foreach ($recettes_similaires as $recette_similaire): ?>
             <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-              <img src="../admin/<?= htmlspecialchars($recette_similaire['main_image']); ?>" alt="<?= htmlspecialchars($recette_similaire['recipe_name']); ?>" class="w-full h-48 object-cover">
+              <img src="admin/uploads/<?= htmlspecialchars($recette_similaire['main_image']); ?>" alt="<?= htmlspecialchars($recette_similaire['recipe_name']); ?>" class="w-full h-48 object-cover">
               <div class="p-4">
                 <h3 class="text-lg font-bold text-gray-800"><?= htmlspecialchars($recette_similaire['recipe_name']); ?></h3>
                 
@@ -147,8 +142,8 @@ mysqli_stmt_close($stmt);
                 </p>
 
                 <div class="flex justify-center items-center mt-4">
-                  <a href="detail-recette.php?id=<?= $recette_similaire['id'] ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">
-                    VOIR LA RECETTE
+                  <a href="detail-recette.php?id=<?= $recette_similaire['id'] ?>" class="bg-red-500 py-2 px-4 text-white rounded-lg font-bold">
+                  <i class="fa fa-eye text-xl"></i>
                   </a>
                 </div>
               </div>
@@ -161,5 +156,5 @@ mysqli_stmt_close($stmt);
 </main>
 
 <!-- Footer start-->
-<?php include('../templates/footer.php'); ?>
+<?php include('templates/footer.php'); ?>
 <!--Footer end-->

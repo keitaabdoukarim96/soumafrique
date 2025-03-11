@@ -1,8 +1,7 @@
 <?php
 // Connexion à la base de données
-header('Content-Type: text/html; charset=utf-8');
-include('../admin/config/db.php');
-mysqli_set_charset($conn, "utf8mb4");
+include('./templates/header.php');
+
 
 // Vérification que l'ID est fourni
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
@@ -61,7 +60,7 @@ function htmlToText($html) {
 ?>
 
 <!--Header start-->
-<?php include('../templates/header.php'); ?>
+
 <!--Header end-->
 
 <main class="flex-grow mt-20 mb-20 px-4">
@@ -77,7 +76,7 @@ function htmlToText($html) {
     <section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       <!-- Image de l'épice -->
       <div>
-        <img src="../admin/uploads/<?= htmlspecialchars($epice['image_epice']); ?>" alt="<?= htmlspecialchars($epice['nom_epice']); ?>" class="w-full h-auto border border-green-500 rounded-lg">
+        <img src="admin/uploads/<?= htmlspecialchars($epice['image_epice']); ?>" alt="<?= htmlspecialchars($epice['nom_epice']); ?>" class="w-full h-auto border border-green-500 rounded-lg">
       </div>
 
       <!-- Détails de l'épice -->
@@ -94,11 +93,22 @@ function htmlToText($html) {
           </span>
         </p>
 
-        <!-- Boutons d'action -->
-        <div class="flex space-x-4 mb-4">
-          <button class="btn-gradient px-4 py-2 text-white font-bold rounded">Ajouter au panier</button>
-          <button class="btn-gradient px-4 py-2 text-white font-bold rounded">Acheter cet article</button>
-        </div>
+        <div class="flex items-center mt-4 space-x-4">
+                  <!-- ✅ Bouton Géolocalisation -->
+                  <button class="btn-gradient text-white px-4 py-2 rounded-lg font-bold flex items-center transition duration-300"
+        id="go-to-map-<?= $epice['id']; ?>"
+        data-lat="<?= htmlspecialchars($epice['latitude']); ?>"
+        data-lng="<?= htmlspecialchars($epice['longitude']); ?>">
+    <i class="fas fa-map-marker-alt mr-2"></i>  Aller à la boutique
+    </button>
+                 
+      <button class="btn-gradient text-white  px-4 py-2 rounded-lg font-bold flex items-center  transition duration-300 add-to-cart" 
+              data-id="<?= $epice['id']; ?>" 
+              data-name="<?= htmlspecialchars($epice['nom_epice']); ?>" 
+              data-price="<?= $epice['prix']; ?>">
+        <i class="fas fa-shopping-cart mr-2"></i>  Panier
+      </button>
+                </div>
       </div>
     </section>
 
@@ -117,7 +127,7 @@ function htmlToText($html) {
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <?php foreach ($epices_similaires as $epice_similaire): ?>
             <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-              <img src="../admin/uploads/<?= htmlspecialchars($epice_similaire['image_epice']); ?>" alt="<?= htmlspecialchars($epice_similaire['nom_epice']); ?>" class="w-full h-48 object-cover">
+              <img src="admin/uploads/<?= htmlspecialchars($epice_similaire['image_epice']); ?>" alt="<?= htmlspecialchars($epice_similaire['nom_epice']); ?>" class="w-full h-48 object-cover">
               <div class="p-4">
                 <h3 class="text-lg font-bold text-gray-800"><?= htmlspecialchars($epice_similaire['nom_epice']); ?></h3>
                 <p class="text-sm text-gray-600"><strong>Prix :</strong> <?= htmlspecialchars($epice_similaire['prix']); ?> €</p>
@@ -127,8 +137,22 @@ function htmlToText($html) {
                 <p class="text-sm <?= $epice_similaire['disponibilite'] == 'en_stock' ? 'text-green-600' : 'text-red-600'; ?>">
                   <strong>Disponibilité :</strong> <?= $epice_similaire['disponibilite'] == 'en_stock' ? 'En stock' : 'Rupture de stock'; ?>
                 </p>
-                <div class="flex justify-center items-center mt-4">
-                  <a href="detail-epice.php?id=<?= $epice_similaire['id'] ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR DÉTAILS</a>
+                <div class="flex justify-between items-center mt-4">
+                  <!-- ✅ Bouton Géolocalisation -->
+                  <button class="btn-gradient text-white px-4 py-2 rounded-lg font-bold flex items-center transition duration-300"
+        id="go-to-map-<?= $epice['id']; ?>"
+        data-lat="<?= htmlspecialchars($epice['latitude']); ?>"
+        data-lng="<?= htmlspecialchars($epice['longitude']); ?>">
+    <i class="fas fa-map-marker-alt mr-2"></i> 
+</button>
+                  <a href="detail-epice.php?id=<?= $epice['id']; ?>" class="bg-red-500 py-2 px-4 text-white rounded-lg font-bold"><i class="fa fa-eye text-xl"></i></a>
+                   <!-- ✅ Bouton Ajouter au Panier -->
+      <button class="btn-gradient text-white px-4 py-2 rounded-lg font-bold flex items-center  transition duration-300 add-to-cart" 
+              data-id="<?= $epice['id']; ?>" 
+              data-name="<?= htmlspecialchars($epice['nom_epice']); ?>" 
+              data-price="<?= $epice['prix']; ?>">
+        <i class="fas fa-shopping-cart mr-2"></i> 
+      </button>
                 </div>
               </div>
             </div>
@@ -140,5 +164,8 @@ function htmlToText($html) {
 </main>
 
 <!-- Footer start-->
-<?php include('../templates/footer.php'); ?>
+<script src="js/geolocalisation.js"></script>
+<script src="js/map.js"></script>
+<script src="cart.js"></script>
+<?php include('templates/footer.php'); ?>
 <!--Footer end-->

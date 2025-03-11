@@ -1,205 +1,204 @@
 <?php
 // Connexion à la base de données
-header('Content-Type: text/html; charset=utf-8');
-include('./admin/config/db.php');
-mysqli_set_charset($conn, "utf8mb4");
+include('./templates/header.php');
 
-// Nombre de recettes par page
+
+// Nombre d'éléments par page
 $limit = 6;
 
-if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
-    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
-    $offset = ($page - 1) * $limit;
+// Page courante pour épices
+$page_epices = isset($_GET['page_epices']) && is_numeric($_GET['page_epices']) ? intval($_GET['page_epices']) : 1;
+$offset_epices = ($page_epices - 1) * $limit;
 
-    // Récupérer les recettes
-    $sql = "SELECT id, recipe_name, main_image, cooking_time, servings, cooking_method, budget, description 
-            FROM recette 
-            LIMIT $limit OFFSET $offset";
-    $result = mysqli_query($conn, $sql);
+// Page courante pour recettes
+$page_recettes = isset($_GET['page_recettes']) && is_numeric($_GET['page_recettes']) ? intval($_GET['page_recettes']) : 1;
+$offset_recettes = ($page_recettes - 1) * $limit;
 
-    // Compter le nombre total de pages
-    $count_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM recette");
-    $total_count = mysqli_fetch_assoc($count_result)['count'];
-    $total_pages = ceil($total_count / $limit);
+// Récupérer les épices
+$sql_epices = "SELECT id, nom_epice, image_epice, epicerie_nom, adresse, horaires, disponibilite 
+               FROM epicerie 
+               LIMIT $limit OFFSET $offset_epices";
+$result_epices = mysqli_query($conn, $sql_epices);
+$epices = mysqli_fetch_all($result_epices, MYSQLI_ASSOC);
 
-    // Préparer les données JSON
-    $data = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $data[] = [
-            'id' => intval($row['id']),
-            'recipe_name' => htmlspecialchars($row['recipe_name']),
-            'main_image' => htmlspecialchars($row['main_image']),
-            'cooking_time' => htmlspecialchars($row['cooking_time']),
-            'servings' => htmlspecialchars($row['servings']),
-            'cooking_method' => htmlspecialchars($row['cooking_method']),
-            'budget' => htmlspecialchars($row['budget']),
-            'description' => htmlspecialchars($row['description']),
-        ];
-    }
+// Nombre total d'épices
+$total_epices_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM epicerie");
+$total_epices = mysqli_fetch_assoc($total_epices_result)['count'];
+$total_pages_epices = ceil($total_epices / $limit);
 
-    echo json_encode(['data' => $data, 'total_pages' => $total_pages]);
-    exit();
-}
+// Récupérer les recettes
+$sql_recettes = "SELECT id, recipe_name, main_image, cooking_time, servings, cooking_method, budget 
+                 FROM recette 
+                 LIMIT $limit OFFSET $offset_recettes";
+$result_recettes = mysqli_query($conn, $sql_recettes);
+$recettes = mysqli_fetch_all($result_recettes, MYSQLI_ASSOC);
 
-// Calcul du total des pages pour la pagination (non utilisé dans AJAX)
-$total_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM recette");
-$total_count = mysqli_fetch_assoc($total_result)['count'];
-$total_pages = ceil($total_count / $limit);
+// Nombre total de recettes
+$total_recettes_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM recette");
+$total_recettes = mysqli_fetch_assoc($total_recettes_result)['count'];
+$total_pages_recettes = ceil($total_recettes / $limit);
 ?>
 
 
-<!--Header start-->
-<?php include('./templates/header.php'); ?>
-<!--Header end-->
 
-<section class="relative">
-  <div class="relative w-full h-[70vh]">
-    <!-- Image de fond -->
-    <img src="assets/img/contact-banner.png" alt="Bannière Contact" class="absolute inset-0 w-full h-full object-cover">
-    <!-- Superposition sombre et formulaire de recherche centré -->
-    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4" style="padding-top: calc(80px + 1rem);">
-      <!-- Barre de recherche centrée -->
-      <div class="bg-white bg-opacity-70 rounded-lg p-4 shadow-lg max-w-md w-full">
-        <form class="flex items-center">
-          <input
-            type="text"
-            placeholder="Recherchez une épice ou une recette"
-            class="flex-grow py-2 px-4 rounded-l-lg focus:outline-none"
-          />
-          <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-r-lg">
-            <i class="fas fa-search"></i>
-          </button>
-        </form>
+
+<main class="flex-grow mt-20 mb-20">
+  <!-- Carrousel ajusté -->
+  <div class="relative w-full">
+    <!-- Slides -->
+    <div id="carousel" class="relative overflow-hidden">
+      <div class="carousel-slide">
+        <img src="assets/img/1.jpg" alt="Épice 1" class="w-full h-[70vh] object-cover">
+      </div>
+      <div class="carousel-slide hidden">
+        <img src="assets/img/2.jpg" alt="Épice 2" class="w-full h-[70vh] object-cover">
+      </div>
+      <div class="carousel-slide hidden">
+        <img src="assets/img/3.jpg" alt="Épice 3" class="w-full h-[70vh] object-cover">
       </div>
     </div>
-  </div>
-</section>
 
-<main class="flex-grow mt-10 mb-10">
-  <div class="flex">
-    <!-- Sidebar -->
-    <aside class="w-1/4 bg-gray-100 shadow-lg">
+    <!-- Barre de recherche centrée sur le carrousel -->
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
+    <form id="search-form" class="flex items-center bg-white rounded-full shadow-lg overflow-hidden border border-gray-300 focus-within:border-red-500 transition-all duration-300">
+    <input type="text" id="search-input" placeholder="Recherchez une épice ou une recette..."
+        class="flex-grow py-3 px-5 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-full">
+    
+    <button type="submit" id="search-button"
+        class="bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-all duration-300">
+        <i class="fas fa-search"></i>
+    </button>
+</form>
+
+
+        <!-- Résultats de recherche en grille -->
+      <div id="search-results"
+          class="absolute w-full bg-white border border-gray-300 shadow-lg rounded-lg mt-1 hidden p-4 grid grid-cols-1 sm:grid-cols-4 md:grid-cols-3 gap-4 max-h-80 overflow-y-auto">
+          <!-- Les résultats s'afficheront ici dynamiquement -->
+      </div>
+
+
+</div>
+
+
+    <!-- Cercles de navigation 
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div class="circle bg-gray-300 w-3 h-3 rounded-full cursor-pointer" data-slide="0"></div>
+      <div class="circle bg-gray-300 w-3 h-3 rounded-full cursor-pointer" data-slide="1"></div>
+      <div class="circle bg-gray-300 w-3 h-3 rounded-full cursor-pointer" data-slide="2"></div>
+    </div>-->
+  </div>
+  
+  <div class="flex mt-8">
+  <aside class="w-1/4 bg-gray-100 shadow-lg">
       <!-- Titre FILTRER -->
-      <div class="bg-green-700 text-white p-4">
+      <div class="bg-green-700 text-white p-4 flex justify-between items-center">
         <h2 class="text-lg font-bold flex items-center">
           <i class="fas fa-sliders-h mr-2"></i> FILTRER
         </h2>
+        <button id="reset-filters" class="text-sm font-bold underline hover:text-gray-300">Réinitialiser</button>
       </div>
+
       <!-- Contenu de la sidebar -->
       <div class="space-y-6 p-4">
         <!-- Recherche -->
         <section>
           <h3 class="font-bold text-gray-700 mb-2">RECHERCHE</h3>
-          <input type="text" placeholder="Taper 'Recette...'" class="w-full py-2 px-4 border rounded bg-gray-200 focus:outline-none">
+          <input type="text" id="search-filter" placeholder="Recherchez une épice ou une recette..."
+            class="w-full py-2 px-4 border rounded bg-gray-200 focus:outline-none">
         </section>
-        <!-- Filtrage par catégorie -->
+
+
+        <!-- Filtrer par type -->
         <section>
-          <h3 class="font-bold text-gray-700 mb-2">PAR CATÉGORIE DE RECETTES</h3>
-          <ul class="space-y-2 ml-4">
-            <li><label><input type="checkbox" class="mr-2"> Entrées</label></li>
-            <li><label><input type="checkbox" class="mr-2"> Plats principaux</label></li>
-            <li><label><input type="checkbox" class="mr-2"> Desserts</label></li>
-          </ul>
-          <h3 class="font-bold text-gray-700 mb-2">FILTRAGE PAR BUDGET</h3>
-          <div class="space-y-4 ml-4">
-            <!-- Curseur de budget -->
-            <div>
-              <label for="budget-range" class="block text-sm font-medium text-gray-700">Budget (€)</label>
-              <input type="range" id="budget-range" min="5" max="100" step="1" class="w-full">
-              <div class="flex justify-between text-sm text-gray-500 mt-1">
-                <span>5 €</span>
-                <span>100 €</span>
-              </div>
-            </div>
-            <!-- Entrées manuelles -->
-            <div class="flex space-x-2">
-              <input type="number" placeholder="Min (€)" class="w-1/2 py-2 px-3 border rounded bg-gray-200 focus:outline-none">
-              <input type="number" placeholder="Max (€)" class="w-1/2 py-2 px-3 border rounded bg-gray-200 focus:outline-none">
-            </div>
-          </div>
-          <h3 class="font-bold text-gray-700 mb-2 mt-4">FILTRAGE PAR INGRÉDIENTS</h3>
-          <input type="text" placeholder="Ex: Poulet, Riz..." class="w-full py-2 px-3 border rounded bg-gray-200 focus:outline-none">
-          <h3 class="font-bold text-gray-700 mt-2 uppercase">Recettes avec Épices entières</h3>
-          <ul class="space-y-2 ml-4">
-            <li><label><input type="checkbox" class="mr-2"> Marinades pour viandes </label></li>
-            <li><label><input type="checkbox" class="mr-2"> Ragoût de poisson épicé</label></li>
-            <li><label><input type="checkbox" class="mr-2"> Riz parfumé</label></li>
+          <h3 class="font-bold text-gray-700 mb-2">PAR TYPE</h3>
+          <label class="flex items-center"><input type="checkbox" class="type-filter mr-2" value="epice"> Épices</label>
+          <label class="flex items-center"><input type="checkbox" class="type-filter mr-2" value="recette"> Recettes</label>
+        </section>
+
+        <!-- Par catégorie d'épices -->
+        <section>
+          <h3 class="font-bold text-gray-700 mb-2">PAR CATÉGORIE D'ÉPICE</h3>
+          <ul class="space-y-2">
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Épices Entières"> Épices Entières</label></li>
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Graines"> Graines</label></li>
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Baies"> Baies</label></li>
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Épices moulues ou en poudre"> Épices moulues</label></li>
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Mélanges d'Epices"> Mélanges d'Epices</label></li>
           </ul>
         </section>
-        
-        <!-- Bouton de validation -->
-        <button class="font-bold btn-gradient hover:shadow-lg text-white px-4 py-2 rounded w-full mt-6">
-          Appliquer
-        </button>
+
+        <!-- Par catégorie de recettes -->
+        <section>
+          <h3 class="font-bold text-gray-700 mb-2">PAR CATÉGORIE DE RECETTE</h3>
+          <ul class="space-y-2">
+            <li><label><input type="checkbox" class="category-filter-recettes mr-2" value="Plats traditionnels"> Plats traditionnels</label></li>
+            <li><label><input type="checkbox" class="category-filter-recettes mr-2" value="Desserts"> Desserts</label></li>
+            <li><label><input type="checkbox" class="category-filter-recettes mr-2" value="Soupes"> Soupes</label></li>
+          </ul>
+        </section>
+
+
+        <!-- Disponibilité -->
+        <section>
+          <h3 class="font-bold text-gray-700 mb-2">DISPONIBILITÉ</h3>
+          <label class="flex items-center"><input type="checkbox" id="available-filter" class="mr-2"> En stock</label>
+        </section>
+
+        <!-- Filtrage avancé par prix -->
+        <section>
+          <div class="space-y-4">
+
+            <button id="apply-filters" class="font-bold bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded w-full">
+              Appliquer
+            </button>
+          </div>
+        </section>
       </div>
     </aside>
 
-    <!-- Contenu principal -->
-    <div class="w-full lg:w-3/4 p-4">
-      <h2 class="text-2xl font-bold mb-6 text-center underline">Les Recettes</h2>
-      <div id="recettes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Les recettes seront chargées ici par AJAX -->
-      </div>
-      <div class="flex justify-center mt-8 space-x-4">
-        <button id="prev-btn" class="bg-green-700 text-white px-4 py-2 rounded-lg" data-page="1">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <button id="next-btn" class="bg-green-700 text-white px-4 py-2 rounded-lg" data-page="2">
-          <i class="fas fa-arrow-right"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-</main>
 
+  <!-- Contenu principal -->
+  <div class="w-3/4 p-4" id="filter-results">
+      <!-- Section recettes -->
+      <section class="mt-12" id="recettes-section">
+        <h2 class="text-2xl font-bold mb-6 text-center underline">Les Recettes</h2>
+        <div class="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+          <?php foreach ($recettes as $recette): ?>
+            <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
+              <img src="admin/uploads/<?= htmlspecialchars($recette['main_image']); ?>" alt="<?= htmlspecialchars($recette['recipe_name']); ?>" class="w-full h-48 object-cover">
+              <div class="p-4">
+                <h3 class="text-lg font-bold text-gray-800"><?= htmlspecialchars($recette['recipe_name']); ?></h3>
+                <p class="text-sm text-gray-600"><strong>Durée:</strong> <?= htmlspecialchars($recette['cooking_time']); ?> min</p>
+                <p class="text-sm text-gray-600"><strong>Portions:</strong> <?= htmlspecialchars($recette['servings']); ?> pers.</p>
+                <p class="text-sm text-gray-600"><strong>Mode de cuisson:</strong> <?= htmlspecialchars($recette['cooking_method']); ?></p>
+                <p class="text-sm text-gray-600"><strong>Budget:</strong> <?= htmlspecialchars($recette['budget']); ?> €</p>
+                
+                <div class="flex justify-center items-center mt-4">
+                  <a href="detail-recette.php?id=<?= $recette['id']; ?>" class="bg-red-500 py-2 px-4 text-white rounded-lg font-bold"><i class="fa fa-eye text-xl"></i></a>
+                </div>
+              </div>
+            </div>
+          <?php endforeach; ?>
+        </div>
+
+        <!-- Pagination recettes -->
+        <div class="flex justify-center mt-8 space-x-4">
+          <?php if ($page_recettes > 1): ?>
+            <a href="?page_recettes=<?= $page_recettes - 1; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Précédent</a>
+          <?php endif; ?>
+          <?php if ($page_recettes < $total_pages_recettes): ?>
+            <a href="?page_recettes=<?= $page_recettes + 1; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Suivant</a>
+          <?php endif; ?>
+        </div>
+      </section>
+    </div>
+</div>
+
+</main>
+<!-- Inclure le fichier JS -->
+<script src="search.js"></script>
+<script src="filter.js"></script>
 <!-- Footer start-->
 <?php include('./templates/footer.php'); ?>
 <!--Footer end-->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const recettesContainer = document.getElementById('recettes-container');
-  const prevBtn = document.getElementById('prev-btn');
-  const nextBtn = document.getElementById('next-btn');
-  let currentPage = 1;
-
-  function loadRecettes(page) {
-    fetch(`recettes.php?ajax=1&page=${page}`)
-      .then(response => response.json())
-      .then(data => {
-        recettesContainer.innerHTML = data.data.map(recette => `
-          <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-            <img src="${recette.main_image.replace('./uploads/', './admin/uploads/')}" alt="${recette.recipe_name}" class="w-full h-48 object-cover">
-            <div class="p-4">
-              <h3 class="text-lg font-bold text-gray-800">${recette.recipe_name}</h3>
-              <p class="text-sm text-gray-600"><strong>Durée:</strong> ${recette.cooking_time} min</p>
-              <p class="text-sm text-gray-600"><strong>Portions:</strong> ${recette.servings} personnes</p>
-              <p class="text-sm text-gray-600"><strong>Mode de cuisson:</strong> ${recette.cooking_method}</p>
-              <p class="text-sm text-gray-600"><strong>Budget:</strong> ${recette.budget}€</p>
-              <div class="flex justify-center items-center mt-4">
-                <a href="details/detail-recette.php?id=${recette.id}" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR LES DÉTAILS</a>
-              </div>
-            </div>
-          </div>
-        `).join('');
-
-        prevBtn.style.display = page === 1 ? 'none' : 'block';
-        nextBtn.style.display = page >= data.total_pages ? 'none' : 'block';
-      })
-      .catch(error => console.error('Erreur lors du chargement des recettes:', error));
-  }
-
-  prevBtn.addEventListener('click', () => {
-    if (currentPage > 1) {
-      currentPage -= 1;
-      loadRecettes(currentPage);
-    }
-  });
-
-  nextBtn.addEventListener('click', () => {
-    currentPage += 1;
-    loadRecettes(currentPage);
-  });
-
-  loadRecettes(currentPage);
-});
-</script>

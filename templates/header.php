@@ -1,3 +1,22 @@
+<?php
+
+$total_items = 0;
+session_start();
+include('admin/config/db.php');
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+
+    // Récupérer uniquement les produits du panier de l'utilisateur connecté
+    $stmt = $conn->prepare("SELECT SUM(quantite) AS total FROM panier WHERE user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $stmt->bind_result($total_items);
+    $stmt->fetch();
+    $stmt->close();
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -12,6 +31,25 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
   <title>SoumAfrique</title>
+
+  <style>
+   #cart-count {
+  min-width: 18px;
+  min-height: 18px;
+  font-size: 12px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+}
+
+
+.fas.fa-shopping-cart {
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+  </style>
 </head>
 
 <body class="font-sans bg-gray-100 flex flex-col min-h-screen">
@@ -33,6 +71,19 @@
         <?php if (!isset($_SESSION["user_id"])) : ?>
         <a href="/soumafrique/admin/inscription-proprietaire.php" class="bg-red-700 text-white font-bold py-2 px-4 rounded hover:bg-red-800">Propriétaire de Boutique, cliquez ici</a>
         <?php endif; ?>
+      <!-- 🛒 Icône Panier Fixe avec compteur bien positionné -->
+<!-- Icône du panier avec compteur -->
+<div class="relative ml-6">
+  <a href="panier.php" class="relative flex items-center text-gray-900 hover:text-gray-700 transition">
+    <i class="fas fa-shopping-cart text-3xl text-yellow-500"></i>
+    <span id="cart-count" class="absolute top-0 right-0 transform translate-x-2 -translate-y-2 bg-green-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shadow-md">
+      <?= $total_items ?: 0 ?>
+    </span>
+  </a>
+</div>
+
+
+
       </nav>
 
       <!-- Icônes à droite
@@ -54,17 +105,17 @@
             </button>
             <!-- Contenu du menu déroulant (caché par défaut) -->
             <div id="accountMenu" class="hidden absolute bg-white shadow-sm rounded-md mt-1 w-32 left-0 translate-x-[-5px] z-50">
-                <a href="./user/profile.php" class="block px-3 py-1 text-sm text-black hover:bg-gray-100 flex items-center">
+                <a href="profile.php" class="block px-3 py-1 text-sm text-black hover:bg-gray-100 flex items-center">
                     <i class="fas fa-user text-purple-500 mr-2"></i> Profil
                 </a>
-                <a href="./logout.php" class="block px-3 py-1 text-sm text-red-500 hover:bg-gray-100 flex items-center">
+                <a href="logout.php" class="block px-3 py-1 text-sm text-red-500 hover:bg-gray-100 flex items-center">
                     <i class="fas fa-sign-out-alt text-orange-500 mr-2"></i> Déconnexion
                 </a>
             </div>
         </div>
     <?php else : ?>
         <!-- Lien de connexion -->
-        <a href="./login.php" class="text-black hover-menu text-sm">Connexion</a>
+        <a href="login.php" class="text-black hover-menu text-sm">Connexion</a>
     <?php endif; ?>
 </div>
 

@@ -1,12 +1,14 @@
 <?php
 session_start();
-include('../admin/config/db.php');
+include('admin/config/db.php');
 
 $message = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = trim($_POST["email"]);
     $password = trim($_POST["password"]);
+
+   
 
     if (empty($email) || empty($password)) {
         $message = "Tous les champs sont obligatoires.";
@@ -18,10 +20,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_result($id, $nom, $hashed_password);
         $stmt->fetch();
 
+
         if ($stmt->num_rows > 0 && password_verify($password, $hashed_password)) {
             $_SESSION["user_id"] = $id;
-            $_SESSION["user_nom"] = $nom;
-            header("Location: profile.php");
+           
+            header("Location: index.php");
             exit();
         } else {
             $message = "Email ou mot de passe incorrect.";
@@ -55,7 +58,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 ✅ Vous avez été déconnecté avec succès.
             </div>
         <?php endif; ?>
-        <form action="login.php" method="POST" class="space-y-4">
+        <form action="" method="POST" class="space-y-4">
             <input type="email" name="email" placeholder="Email" class="w-full p-2 border rounded-lg">
             <input type="password" name="password" placeholder="Mot de passe" class="w-full p-2 border rounded-lg">
             <button type="submit" class="w-full bg-green-500 text-white p-2 rounded-lg">Se connecter</button>

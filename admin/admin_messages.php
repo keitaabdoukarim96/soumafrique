@@ -4,9 +4,8 @@ include('../admin/config/db.php');
 mysqli_set_charset($conn, "utf8mb4");
 include('./templates/header.php');
 
-// Nombre d'éléments à afficher par page
+// Nombre d'éléments par page
 $limit = 5;
-// Calcul de l'offset
 $offset = isset($_GET['page']) ? ($_GET['page'] - 1) * $limit : 0;
 
 $message = ''; // Initialisation du message
@@ -14,24 +13,24 @@ $message = ''; // Initialisation du message
 // Suppression si un `delete_id` est passé dans l'URL
 if (isset($_GET['delete_id'])) {
     $delete_id = intval($_GET['delete_id']);
-    $delete_query = "DELETE FROM categorie_epice WHERE id = ?";
+    $delete_query = "DELETE FROM messages WHERE id = ?";
     if ($delete_stmt = mysqli_prepare($conn, $delete_query)) {
         mysqli_stmt_bind_param($delete_stmt, 'i', $delete_id);
         if (mysqli_stmt_execute($delete_stmt)) {
-            $message = '<p class="text-green-500 text-center" id="delete-message">La catégorie a été supprimée avec succès.</p>';
+            $message = '<p class="text-green-500 text-center" id="delete-message">Le message a été supprimé avec succès.</p>';
         } else {
-            $message = '<p class="text-red-500" id="delete-message">Erreur lors de la suppression de la catégorie.</p>';
+            $message = '<p class="text-red-500 text-center" id="delete-message">Erreur lors de la suppression du message.</p>';
         }
         mysqli_stmt_close($delete_stmt);
     }
 }
 
-// Récupérer les catégories d'épices avec une limite et un offset
-$query = "SELECT id, nom_categorie, sous_categorie FROM categorie_epice LIMIT $limit OFFSET $offset";
+// Récupérer les messages avec une limite et un offset
+$query = "SELECT id, name, email, subject, message, created_at FROM messages ORDER BY created_at DESC LIMIT $limit OFFSET $offset";
 $result = mysqli_query($conn, $query);
 
-// Compter le nombre total d'enregistrements
-$total_query = "SELECT COUNT(*) as count FROM categorie_epice";
+// Compter le nombre total de messages
+$total_query = "SELECT COUNT(*) as count FROM messages";
 $total_result = mysqli_query($conn, $total_query);
 $total_count = mysqli_fetch_assoc($total_result)['count'];
 $total_pages = ceil($total_count / $limit);
@@ -41,8 +40,8 @@ $total_pages = ceil($total_count / $limit);
 <?php include('sidebar2.php'); ?>
 <div class="flex-1 p-6">
   <div class="bg-white shadow-lg rounded-lg p-6">
-    <h2 class="text-lg font-bold mb-4 text-center">Catégories d'épices</h2>
-    
+    <h2 class="text-lg font-bold mb-4 text-center">📩 Messages Reçus</h2>
+
     <!-- Message de suppression -->
     <?php if ($message): ?>
       <?= $message ?>
@@ -51,9 +50,11 @@ $total_pages = ceil($total_count / $limit);
     <table class="table-auto w-full border-collapse border border-gray-300">
       <thead class="bg-gray-200 text-gray-600 uppercase text-xs">
         <tr>
-          <th class="py-3 px-4 text-left border">Id</th>
-          <th class="py-3 px-4 text-left border">Nom Catégorie</th>
-          <th class="py-3 px-4 text-left border">Sous-catégories</th>
+          <th class="py-3 px-4 text-left border">Nom</th>
+          <th class="py-3 px-4 text-left border">Email</th>
+          <th class="py-3 px-4 text-left border">Sujet</th>
+          <th class="py-3 px-4 text-left border">Message</th>
+          <th class="py-3 px-4 text-left border">Date</th>
           <th class="py-3 px-4 text-center border">Actions</th>
         </tr>
       </thead>
@@ -62,28 +63,27 @@ $total_pages = ceil($total_count / $limit);
         // Parcourir les résultats et afficher chaque ligne
         while ($row = mysqli_fetch_assoc($result)) {
             echo '<tr class="border-b hover:bg-gray-100">';
-            echo '<td class="py-3 px-4 font-semibold border">' . htmlspecialchars($row['id']) . '</td>';
-            echo '<td class="py-3 px-4 font-semibold border">' . htmlspecialchars($row['nom_categorie']) . '</td>';
-            echo '<td class="py-3 px-4 border">' . htmlspecialchars($row['sous_categorie']) . '</td>';
+            echo '<td class="py-3 px-4 font-semibold border">' . htmlspecialchars($row['name']) . '</td>';
+            echo '<td class="py-3 px-4 font-semibold border">' . htmlspecialchars($row['email']) . '</td>';
+            echo '<td class="py-3 px-4 border">' . htmlspecialchars($row['subject']) . '</td>';
+            echo '<td class="py-3 px-4 border">' . nl2br(htmlspecialchars($row['message'])) . '</td>';
+            echo '<td class="py-3 px-4 border">' . htmlspecialchars($row['created_at']) . '</td>';
             echo '<td class="py-3 px-4 text-center border">';
-            echo '<button class="inline-block text-yellow-500 hover:text-yellow-700">';
-            echo '<a href="update-spice-category.php?id=' . $row['id'] . '"</a><i class="fa fa-edit text-xl"></i>';
-            echo '</button> ';
-            echo '<button class="inline-block text-red-500 hover:text-red-700" ';
-            echo 'onclick="return confirmDeletion(' . $row['id'] . ')"><i class="fa fa-trash text-xl"></i></button>';
+            echo '<a href="reply_message.php?id=' . $row['id'] . '" class="inline-block text-blue-500 hover:text-blue-700 mr-2"><i class="fa fa-reply text-xl"></i></a>';
+           
+            echo '<button class="inline-block text-red-500 hover:text-red-700" onclick="return confirmDeletion(' . $row['id'] . ')"><i class="fa fa-trash text-xl"></i></button>';
             echo '</td>';
             echo '</tr>';
         }
         ?>
       </tbody>
     </table>
+
     <!-- Boutons de pagination -->
     <div class="flex justify-end mt-4 space-x-2">
-      <!-- Bouton Retour -->
       <?php if ($offset > 0): ?>
           <a href="?page=<?php echo $offset / $limit; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Retour</a>
       <?php endif; ?>
-      <!-- Bouton Suivant -->
       <?php if ($offset + $limit < $total_count): ?>
           <a href="?page=<?php echo ($offset / $limit) + 2; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Suivant</a>
       <?php endif; ?>
@@ -94,8 +94,7 @@ $total_pages = ceil($total_count / $limit);
 
 <script>
   function confirmDeletion(id) {
-    if (confirm("Voulez-vous vraiment supprimer cette catégorie ?")) {
-      // Rediriger vers l'URL de suppression
+    if (confirm("Voulez-vous vraiment supprimer ce message ?")) {
       window.location.href = '?delete_id=' + id;
       return true;
     }

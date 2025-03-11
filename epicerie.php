@@ -1,232 +1,226 @@
 <?php
 // Connexion à la base de données
-header('Content-Type: text/html; charset=utf-8');
-include('./admin/config/db.php');
-mysqli_set_charset($conn, "utf8mb4");
+include('templates/header.php');
 
 // Nombre d'éléments par page
-$limit = 6;
+$limit = 9;
 
-if (isset($_GET['ajax']) && $_GET['ajax'] === '1') {
-    $page = isset($_GET['page']) && is_numeric($_GET['page']) ? intval($_GET['page']) : 1;
-    $offset = ($page - 1) * $limit;
+// Page courante pour épices
+$page_epices = isset($_GET['page_epices']) && is_numeric($_GET['page_epices']) ? intval($_GET['page_epices']) : 1;
+$offset_epices = ($page_epices - 1) * $limit;
 
-    // Inclure l'id et epicerie_nom dans la requête SQL
-    $sql = "SELECT id, nom_epice, image_epice, adresse, horaires, disponibilite, epicerie_nom FROM epicerie LIMIT $limit OFFSET $offset";
-    $result = mysqli_query($conn, $sql);
+// Page courante pour recettes
+$page_recettes = isset($_GET['page_recettes']) && is_numeric($_GET['page_recettes']) ? intval($_GET['page_recettes']) : 1;
+$offset_recettes = ($page_recettes - 1) * $limit;
 
-    // Compter le nombre total de pages
-    $count_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM epicerie");
-    $total_count = mysqli_fetch_assoc($count_result)['count'];
-    $total_pages = ceil($total_count / $limit);
+// Récupérer les épices
+$sql_epices = "SELECT id, nom_epice, image_epice, epicerie_nom, prix, adresse, horaires, disponibilite, latitude, longitude   
+               FROM epicerie 
+               LIMIT $limit OFFSET $offset_epices";
+$result_epices = mysqli_query($conn, $sql_epices);
+$epices = mysqli_fetch_all($result_epices, MYSQLI_ASSOC);
 
-    // Préparer les données JSON
-    $data = [];
-    while ($row = mysqli_fetch_assoc($result)) {
-        $data[] = [
-            'id' => intval($row['id']),
-            'nom_epice' => htmlspecialchars($row['nom_epice']),
-            'image_epice' => htmlspecialchars($row['image_epice']),
-            'adresse' => htmlspecialchars($row['adresse']),
-            'horaires' => htmlspecialchars($row['horaires']),
-            'disponibilite' => htmlspecialchars($row['disponibilite']),
-            'boutique' => htmlspecialchars($row['epicerie_nom']),
-        ];
-    }
+// Nombre total d'épices
+$total_epices_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM epicerie");
+$total_epices = mysqli_fetch_assoc($total_epices_result)['count'];
+$total_pages_epices = ceil($total_epices / $limit);
 
-    // Ajouter le nombre total de pages
-    echo json_encode(['data' => $data, 'total_pages' => $total_pages]);
-    exit();
-}
+// Récupérer les recettes
+$sql_recettes = "SELECT id, recipe_name, main_image, cooking_time, servings, cooking_method, budget 
+                 FROM recette 
+                 LIMIT $limit OFFSET $offset_recettes";
+$result_recettes = mysqli_query($conn, $sql_recettes);
+$recettes = mysqli_fetch_all($result_recettes, MYSQLI_ASSOC);
 
-// Calcul du total pour les boutons de pagination (non utilisé dans l’AJAX)
-$total_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM epicerie");
-$total_count = mysqli_fetch_assoc($total_result)['count'];
-$total_pages = ceil($total_count / $limit);
+// Nombre total de recettes
+$total_recettes_result = mysqli_query($conn, "SELECT COUNT(*) AS count FROM recette");
+$total_recettes = mysqli_fetch_assoc($total_recettes_result)['count'];
+$total_pages_recettes = ceil($total_recettes / $limit);
 ?>
-<!--Header start-->
-<?php include('./templates/header.php'); ?>
-<!--Header end-->
 
-<section class="relative">
-  <div class="relative w-full h-[70vh]">
-    <!-- Image de fond -->
-    <img src="assets/img/contact-banner.png" alt="Bannière Épicerie" class="absolute inset-0 w-full h-full object-cover">
-    <!-- Superposition sombre et formulaire de recherche centré -->
-    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center px-4" style="padding-top: calc(80px + 1rem);">
-      <!-- Barre de recherche centrée -->
-      <div class="bg-white bg-opacity-70 rounded-lg p-4 shadow-lg max-w-md w-full">
-        <form class="flex items-center">
-          <input
-            type="text"
-            placeholder="Recherchez une épice"
-            class="flex-grow py-2 px-4 rounded-l-lg focus:outline-none"
-          />
-          <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-r-lg">
-            <i class="fas fa-search"></i>
-          </button>
-        </form>
+
+
+
+
+
+<main class="flex-grow mt-20 mb-20">
+  <!-- Carrousel ajusté -->
+  <div class="relative w-full">
+    <!-- Slides -->
+    <div id="carousel" class="relative overflow-hidden">
+      <div class="carousel-slide">
+        <img src="assets/img/1.jpg" alt="Épice 1" class="w-full h-[70vh] object-cover">
+      </div>
+      <div class="carousel-slide hidden">
+        <img src="assets/img/2.jpg" alt="Épice 2" class="w-full h-[70vh] object-cover">
+      </div>
+      <div class="carousel-slide hidden">
+        <img src="assets/img/3.jpg" alt="Épice 3" class="w-full h-[70vh] object-cover">
       </div>
     </div>
-  </div>
-</section>
 
-<main class="flex-grow mt-10 mb-10">
-  <div class="flex flex-col lg:flex-row">
-    <!-- Sidebar -->
-    <aside class="w-full lg:w-1/4 bg-gray-100 shadow-lg">
+    <!-- Barre de recherche centrée sur le carrousel -->
+    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
+      <form id="search-form" class="flex items-center bg-white rounded-full shadow-lg overflow-hidden border border-gray-300 focus-within:border-red-500 transition-all duration-300">
+        <input type="text" id="search-input" placeholder="Recherchez une épice ou une recette..."
+          class="flex-grow py-3 px-5 text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-full">
+
+        <button type="submit" id="search-button"
+          class="bg-red-500 text-white px-6 py-3 rounded-full hover:bg-red-600 transition-all duration-300">
+          <i class="fas fa-search"></i>
+        </button>
+      </form>
+
+
+      <!-- Résultats de recherche en grille -->
+      <div id="search-results"
+        class="absolute w-full bg-white border border-gray-300 shadow-lg rounded-lg mt-1 hidden p-4 grid grid-cols-1 sm:grid-cols-4 md:grid-cols-3 gap-4 max-h-80 overflow-y-auto">
+        <!-- Les résultats s'afficheront ici dynamiquement -->
+      </div>
+
+
+    </div>
+
+
+    <!-- Cercles de navigation 
+    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+      <div class="circle bg-gray-300 w-3 h-3 rounded-full cursor-pointer" data-slide="0"></div>
+      <div class="circle bg-gray-300 w-3 h-3 rounded-full cursor-pointer" data-slide="1"></div>
+      <div class="circle bg-gray-300 w-3 h-3 rounded-full cursor-pointer" data-slide="2"></div>
+    </div>-->
+  </div>
+
+  <div class="flex mt-8">
+    <aside class="w-1/4 bg-gray-100 shadow-lg">
       <!-- Titre FILTRER -->
-      <div class="bg-green-700 text-white p-4">
+      <div class="bg-green-700 text-white p-4 flex justify-between items-center">
         <h2 class="text-lg font-bold flex items-center">
           <i class="fas fa-sliders-h mr-2"></i> FILTRER
         </h2>
+        <button id="reset-filters" class="text-sm font-bold underline hover:text-gray-300">Réinitialiser</button>
       </div>
+
       <!-- Contenu de la sidebar -->
       <div class="space-y-6 p-4">
         <!-- Recherche -->
         <section>
           <h3 class="font-bold text-gray-700 mb-2">RECHERCHE</h3>
-          <input type="text" placeholder="Taper 'Soum...'" class="w-full py-2 px-4 border rounded bg-gray-200 focus:outline-none">
+          <input type="text" id="search-filter" placeholder="Recherchez une épice ou une recette..."
+            class="w-full py-2 px-4 border rounded bg-gray-200 focus:outline-none">
         </section>
 
-        <!-- Trier par catégorie -->
+
+        <!-- Filtrer par type -->
         <section>
-          <h3 class="font-bold text-gray-700 mb-2 uppercase">Trier par lettre</h3>
-          <ul class="space-y-2">
-            <li><label><input type="checkbox" class="mr-2"> A-Z, Z-A</label></li>
-          </ul>
+          <h3 class="font-bold text-gray-700 mb-2">PAR TYPE</h3>
+          <label class="flex items-center"><input type="checkbox" class="type-filter mr-2" value="epice"> Épices</label>
+          <label class="flex items-center"><input type="checkbox" class="type-filter mr-2" value="recette"> Recettes</label>
         </section>
 
+        <!-- Par catégorie d'épices -->
         <section>
           <h3 class="font-bold text-gray-700 mb-2">PAR CATÉGORIE D'ÉPICE</h3>
           <ul class="space-y-2">
-            <label class="mr-2">Épices Entières</label>
-            <ul class="ml-4 space-y-1">
-              <li><label><input type="checkbox" class="mr-2"> Graines</label></li>
-              <li><label><input type="checkbox" class="mr-2"> Baies</label></li>
-            </ul>
-            <li><label><input type="checkbox" class="mr-2"> Épices Moulues ou en Poudre</label></li>
-            <ul class="ml-4 space-y-1">
-              <li><label><input type="checkbox" class="mr-2"> Poudre de Kinkeliba</label></li>
-              <li><label><input type="checkbox" class="mr-2"> Poudre de Baobab</label></li>
-            </ul>
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Épices Entières"> Épices Entières</label></li>
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Graines"> Graines</label></li>
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Baies"> Baies</label></li>
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Épices moulues ou en poudre"> Épices moulues</label></li>
+            <li><label><input type="checkbox" class="category-filter-epices mr-2" value="Mélanges d'Epices"> Mélanges d'Epices</label></li>
           </ul>
         </section>
 
+        <!-- Par catégorie de recettes -->
         <section>
-          <h3 class="font-bold text-gray-700 mb-2 uppercase">Par Prix</h3>
+          <h3 class="font-bold text-gray-700 mb-2">PAR CATÉGORIE DE RECETTE</h3>
           <ul class="space-y-2">
-            <ul class="ml-4 space-y-1">
-              <li><label><input type="radio" class="mr-2"> Moins de 5 €.</label></li>
-              <li><label><input type="radio" class="mr-2"> 5 € - 10 €</label></li>
-              <li><label><input type="radio" class="mr-2"> Plus de 10 €</label></li>
-            </ul>
+            <li><label><input type="checkbox" class="category-filter-recettes mr-2" value="Plats traditionnels"> Plats traditionnels</label></li>
+            <li><label><input type="checkbox" class="category-filter-recettes mr-2" value="Desserts"> Desserts</label></li>
+            <li><label><input type="checkbox" class="category-filter-recettes mr-2" value="Soupes"> Soupes</label></li>
           </ul>
         </section>
 
-        <!-- Comparateur de prix -->
+
+        <!-- Disponibilité -->
         <section>
-          <h3 class="font-bold text-gray-700 mb-2">COMPARATEUR DE PRIX ENTRE BOUTIQUES</h3>
-          <ul class="space-y-2">
-            <li><label><input type="radio" name="price-compare" class="mr-2"> Boutique A : 8 €/100g</label></li>
-            <li><label><input type="radio" name="price-compare" class="mr-2"> Boutique B : 7,5 €/100g</label></li>
-            <li><label><input type="radio" name="price-compare" class="mr-2"> Boutique C : 9 €/100g</label></li>
-          </ul>
+          <h3 class="font-bold text-gray-700 mb-2">DISPONIBILITÉ</h3>
+          <label class="flex items-center"><input type="checkbox" id="available-filter" class="mr-2"> En stock</label>
         </section>
 
-        <!-- Bouton Appliquer -->
-        <button class="font-bold btn-gradient hover:shadow-lg text-white px-4 py-2 rounded w-full mt-4">
-          Appliquer
-        </button>
+        <!-- Filtrage avancé par prix -->
+        <section>
+          <div class="space-y-4">
+
+            <button id="apply-filters" class="font-bold bg-green-700 hover:bg-green-600 text-white px-4 py-2 rounded w-full">
+              Appliquer
+            </button>
+          </div>
+        </section>
       </div>
     </aside>
 
+
     <!-- Contenu principal -->
-    <div class="w-full lg:w-3/4 p-4">
-      <h2 class="text-2xl font-bold mb-6 text-center underline">Les Épices</h2>
-      <div id="epices-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <!-- Les épices seront chargées ici par AJAX -->
-      </div>
-      <div class="flex justify-center mt-8 space-x-4">
-        <button id="prev-btn" class="bg-green-700 text-white px-4 py-2 rounded-lg" data-page="1">
-          <i class="fas fa-arrow-left"></i>
-        </button>
-        <button id="next-btn" class="bg-green-700 text-white px-4 py-2 rounded-lg" data-page="2">
-          <i class="fas fa-arrow-right"></i>
-        </button>
-      </div>
-    </div>
-  </div>
-</main>
-
-<!-- Footer start-->
-<?php include('./templates/footer.php'); ?>
-<!--Footer end-->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const epicesContainer = document.getElementById('epices-container');
-  const prevBtn = document.getElementById('prev-btn');
-  const nextBtn = document.getElementById('next-btn');
-  let currentPage = 1;
-
-  // Fonction pour charger les données via AJAX
-  function loadEpices(page) {
-    fetch(`epicerie.php?ajax=1&page=${page}`)
-      .then(response => response.json())
-      .then(data => {
-        // Mettre à jour le contenu des épices
-        epicesContainer.innerHTML = data.data.map(epice => {
-          const disponibiliteText = epice.disponibilite === "en_stock" ? "En stock" : "Rupture de stock";
-          const disponibiliteClass = epice.disponibilite === "en_stock" ? "text-green-500" : "text-red-500";
-
-          return `
+    <div class="w-3/4 p-4" id="filter-results">
+      <!-- Section épices -->
+      <section id="epices-section">
+        <h2 class="text-2xl font-bold mb-6 text-center underline">Les Épices</h2>
+        <div class="products-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 px-4">
+          <?php foreach ($epices as $epice): ?>
             <div class="border border-green-500 rounded-lg overflow-hidden shadow-lg">
-              <img src="./admin/uploads/${epice.image_epice}" alt="${epice.nom_epice}" class="w-full h-48 object-cover">
+              <img src="admin/uploads/<?= htmlspecialchars($epice['image_epice']); ?>" alt="<?= htmlspecialchars($epice['nom_epice']); ?>" class="w-full h-48 object-cover">
               <div class="p-4">
-                <h3 class="text-lg font-bold text-gray-800">${epice.nom_epice}</h3>
-                <p class="text-sm text-gray-600"><strong>Boutique:</strong> ${epice.boutique}</p>
-                <p class="text-sm text-gray-600"><strong>Adresse:</strong> ${epice.adresse}</p>
-                <p class="text-sm text-gray-600"><strong>Horaire:</strong> ${epice.horaires}</p>
-                <p class="text-sm ${disponibiliteClass}"><strong>Disponibilité:</strong> ${disponibiliteText}</p>
-                <div class="flex justify-center items-center mt-4">
-                  <a href="details/detail-epice.php?id=${epice.id}" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">VOIR LES DÉTAILS</a>
-                </div>
+                <h3 class="text-lg font-bold text-gray-800"><?= htmlspecialchars($epice['nom_epice']); ?></h3>
+                <p class="text-lg font-semibold text-red-600"><?= number_format($epice['prix'], 2, ',', ' ') ?> €</p> <!-- ✅ Prix affiché ici -->
+                <p class="text-sm text-gray-600"><strong>Boutique:</strong> <?= htmlspecialchars($epice['epicerie_nom']); ?></p>
+                <p class="text-sm text-gray-600"><strong>Adresse:</strong> <?= htmlspecialchars($epice['adresse']); ?></p>
+                <p class="text-sm text-gray-600"><strong>Horaire:</strong> <?= htmlspecialchars($epice['horaires']); ?></p>
+                <p class="text-sm <?= isset($epice['disponibilite']) && $epice['disponibilite'] == 'en_stock' ? 'text-green-600' : 'text-red-600'; ?>">
+                  <strong>Disponibilité :</strong> <?= isset($epice['disponibilite']) && $epice['disponibilite'] == 'en_stock' ? 'En stock' : 'Rupture de stock'; ?>
+                </p>
+                <div class="flex justify-between items-center mt-4">
+                  <!-- ✅ Bouton Géolocalisation -->
+                  <button class="btn-gradient text-white px-4 py-2 rounded-lg font-bold flex items-center transition duration-300"
+                    id="go-to-map-<?= $epice['id']; ?>"
+                    data-lat="<?= htmlspecialchars($epice['latitude']); ?>"
+                    data-lng="<?= htmlspecialchars($epice['longitude']); ?>">
+                    <i class="fas fa-map-marker-alt mr-2"></i>
+                  </button>
+                  <a href="detail-epice.php?id=<?= $epice['id']; ?>" class="bg-red-500 py-2 px-4 text-white rounded-lg font-bold"><i class="fa fa-eye text-xl"></i></a>
+                  <!-- ✅ Bouton Ajouter au Panier -->
+                  <button class="btn-gradient text-white px-4 py-2 rounded-lg font-bold flex items-center  transition duration-300 add-to-cart"
+                    data-id="<?= $epice['id']; ?>"
+                    data-name="<?= htmlspecialchars($epice['nom_epice']); ?>"
+                    data-price="<?= $epice['prix']; ?>">
+                    <i class="fas fa-shopping-cart mr-2"></i>
+                  </button>
+              </div>
               </div>
             </div>
-          `;
-        }).join('');
+          <?php endforeach; ?>
+        </div>
 
-        // Vérifier si on est à la première page
-        if (page === 1) {
-          prevBtn.style.display = 'none';
-        } else {
-          prevBtn.style.display = 'block';
-        }
+        <!-- Pagination épices -->
+        <div class="flex justify-center mt-8 space-x-4">
+          <?php if ($page_epices > 1): ?>
+            <a href="?page_epices=<?= $page_epices - 1; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Précédent</a>
+          <?php endif; ?>
+          <?php if ($page_epices < $total_pages_epices): ?>
+            <a href="?page_epices=<?= $page_epices + 1; ?>" class="btn-gradient py-2 px-4 text-white rounded-lg font-bold">Suivant</a>
+          <?php endif; ?>
+        </div>
+      </section>
 
-        // Vérifier si on est à la dernière page
-        if (page >= data.total_pages) {
-          nextBtn.style.display = 'none';
-        } else {
-          nextBtn.style.display = 'block';
-        }
-      })
-      .catch(error => console.error('Erreur lors du chargement des épices:', error));
-  }
 
-  // Gestion des boutons de pagination
-  prevBtn.addEventListener('click', () => {
-    if (currentPage > 1) {
-      currentPage -= 1;
-      loadEpices(currentPage);
-    }
-  });
+    </div>
+  </div>
 
-  nextBtn.addEventListener('click', () => {
-    currentPage += 1;
-    loadEpices(currentPage);
-  });
-
-  // Chargement initial
-  loadEpices(currentPage);
-});
-</script>
+</main>
+<!-- Inclure le fichier JS -->
+<script src="search.js"></script>
+<script src="filter.js"></script>
+<script src="cart.js"></script>
+<script src="geolocalisation.js"></script>
+<script src="map.js"></script>
+<!-- Footer start-->
+<?php include('templates/footer.php'); ?>
+<!--Footer end-->

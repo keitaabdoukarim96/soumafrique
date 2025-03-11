@@ -125,6 +125,7 @@ $role = $_SESSION['role'] ?? 'invité';
 
         </div>
       </div>
+      
 
       <!-- Déconnexion -->
       <a href="logout.php" class="flex items-center py-2 px-4 rounded hover:bg-red-600">

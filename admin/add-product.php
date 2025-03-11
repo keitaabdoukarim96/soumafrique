@@ -1,8 +1,36 @@
 <?php
+session_start();
 header('Content-Type: text/html; charset=utf-8');
 include('../admin/config/db.php');
 mysqli_set_charset($conn, "utf8mb4");
-include('./templates/header.php');
+
+// Vérifier si la session contient un utilisateur connecté
+if (!isset($_SESSION["id"])) {
+    header("Location: index.php");
+    exit();
+}
+
+// Récupérer l'ID de l'utilisateur connecté
+$user_id = $_SESSION["id"];
+$user_role = "";
+
+// Vérifier le rôle de l'utilisateur dans la table proprietaire
+$query_proprietaire = "SELECT role FROM proprietaire WHERE id = ?";
+$stmt_proprietaire = $conn->prepare($query_proprietaire);
+$stmt_proprietaire->bind_param("i", $user_id);
+$stmt_proprietaire->execute();
+$result_proprietaire = $stmt_proprietaire->get_result();
+
+if ($row_proprietaire = $result_proprietaire->fetch_assoc()) {
+    $user_role = $row_proprietaire['role'];
+}
+$stmt_proprietaire->close();
+
+// Vérifier si l'utilisateur a accès au formulaire (admin ou propriétaire)
+if ($user_role !== 'propriétaire' && $user_role !== 'admin_role') {
+    echo "<p class='text-red-500 text-center'>Accès refusé. Vous n'avez pas les autorisations nécessaires.</p>";
+    exit();
+}
 
 // Récupérer les catégories existantes depuis la table categorie_epice
 $query = "SELECT id, nom_categorie FROM categorie_epice";
@@ -14,84 +42,117 @@ if ($result) {
     }
 }
 
+$message = "";
 // Si le formulaire est soumis
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Préparer les champs
-    $nom_epice = $_POST['nom_epice'] ?? '';
-    $poids_net = $_POST['poids_net'] ?? '';
-    $prix = $_POST['prix'] ?? '';
-    $epicerie_nom = $_POST['epicerie_nom'] ?? '';
-    $horaires = $_POST['horaires'] ?? '';
-    $adresse = $_POST['adresse'] ?? '';
-    $contact_epicerie = $_POST['contact_epicerie'] ?? '';
-    $disponibilite = isset($_POST['disponibilite']) ? implode(',', $_POST['disponibilite']) : '';
-    $mots_cles = isset($_POST['mots_cles']) ? implode(',', $_POST['mots_cles']) : '';
-    $details = $_POST['details'] ?? '';
-    $categorie_id = $_POST['categorie_id'] ?? '';
-
-    // Traiter l'image
-    $image_epice = null;
-    if (isset($_FILES['image_epice']) && $_FILES['image_epice']['error'] === UPLOAD_ERR_OK) {
-        $upload_dir = './uploads/';
-        $file_name = uniqid() . '_' . basename($_FILES['image_epice']['name']);
-        $upload_file = $upload_dir . $file_name;
-
-        if (move_uploaded_file($_FILES['image_epice']['tmp_name'], $upload_file)) {
-            $image_epice = $file_name;
+    // Vérification des champs obligatoires
+    $required_fields = ['nom_epice', 'poids_net', 'prix', 'epicerie_nom', 'horaires', 'adresse', 'contact_epicerie', 'categorie_id'];
+    $error = false;
+    foreach ($required_fields as $field) {
+        if (empty($_POST[$field])) {
+            $error = true;
+            break;
         }
     }
+    
+    if ($error) {
+        $message = '<p class="text-red-500">Tous les champs obligatoires doivent être remplis.</p>';
+    } else {
+        $nom_epice = $_POST['nom_epice'];
+        $poids_net = $_POST['poids_net'];
+        $prix = $_POST['prix'];
+        $epicerie_nom = $_POST['epicerie_nom'];
+        $horaires = $_POST['horaires'];
+        $adresse = $_POST['adresse'];
+        $contact_epicerie = $_POST['contact_epicerie'];
+        $disponibilite = isset($_POST['disponibilite']) ? implode(',', $_POST['disponibilite']) : '';
+        $mots_cles = isset($_POST['mots_cles']) ? implode(',', $_POST['mots_cles']) : '';
+        $details = $_POST['details'] ?? '';
+        $categorie_id = $_POST['categorie_id'];
 
-    // Insertion dans la base de données
-    $sql = "INSERT INTO epicerie (
-        nom_epice,
-        image_epice,
-        poids_net,
-        prix,
-        epicerie_nom,
-        horaires,
-        adresse,
-        contact_epicerie,
-        disponibilite,
-        mots_cles,
-        details,
-        categorie_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        // Traiter l'image
+        $image_epice = null;
+        if (isset($_FILES['image_epice']) && $_FILES['image_epice']['error'] === UPLOAD_ERR_OK) {
+            $upload_dir = './uploads/';
+            $file_name = uniqid() . '_' . basename($_FILES['image_epice']['name']);
+            $upload_file = $upload_dir . $file_name;
 
-    if ($stmt = mysqli_prepare($conn, $sql)) {
-        mysqli_stmt_bind_param(
-            $stmt,
-            'sssdsssssssi',
-            $nom_epice,
-            $image_epice,
-            $poids_net,
-            $prix,
-            $epicerie_nom,
-            $horaires,
-            $adresse,
-            $contact_epicerie,
-            $disponibilite,
-            $mots_cles,
-            $details,
-            $categorie_id
-        );
+            if (move_uploaded_file($_FILES['image_epice']['tmp_name'], $upload_file)) {
+                $image_epice = $file_name;
+            }
+        }
 
-        if (mysqli_stmt_execute($stmt)) {
-            $message = '<p class="text-green-500" id="success-message">Épice ajoutée avec succès !</p>';
-            echo "<script>
-                      setTimeout(() => {
-                          window.location.href = window.location.href;
-                      }, 3000);
-                      </script>";
+
+        // Récupérer l'ID du propriétaire à partir de la table "proprietaire"
+        $proprietaire_id = null;
+        $query = "SELECT id FROM proprietaire WHERE id = ?";
+        $stmt = mysqli_prepare($conn, $query);
+        mysqli_stmt_bind_param($stmt, "i", $_SESSION["id"]);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
+
+        if ($row = mysqli_fetch_assoc($result)) {
+            $proprietaire_id = $row['id'];
         } else {
-            $message = '<p class="text-red-500">Erreur lors de l’ajout de l’épice.</p>';
+            die("Erreur : Impossible de récupérer l'ID du propriétaire.");
         }
 
         mysqli_stmt_close($stmt);
-    } else {
-        $message = '<p class="text-red-500">Impossible de préparer la requête.</p>';
+        // Insertion dans la base de données
+        $sql = "INSERT INTO epicerie (
+          nom_epice, 
+          image_epice, 
+          poids_net, 
+          prix, 
+          epicerie_nom, 
+          horaires, 
+          adresse, 
+          contact_epicerie, 
+          disponibilite, 
+          mots_cles, 
+          details, 
+          categorie_id, 
+          proprietaire_id
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        if ($stmt = mysqli_prepare($conn, $sql)) {
+            mysqli_stmt_bind_param(
+              $stmt,
+              'sssdsssssssii',  // Types : string, string, double, string, string, string, string, string, string, string, int, int
+              $nom_epice,
+              $image_epice,
+              $poids_net,
+              $prix,
+              $epicerie_nom,
+              $horaires,
+              $adresse,
+              $contact_epicerie,
+              $disponibilite,
+              $mots_cles,
+              $details,
+              $categorie_id,
+              $proprietaire_id
+            );
+
+            if (mysqli_stmt_execute($stmt)) {
+                $message = '<p class="text-green-500">Épice ajoutée avec succès !</p>';
+                echo "<script>
+                          setTimeout(() => {
+                              window.location.href = window.location.href;
+                          }, 3000);
+                      </script>";
+            } else {
+                $message = '<p class="text-red-500">Erreur lors de l’ajout de l’épice.</p>';
+            }
+            mysqli_stmt_close($stmt);
+        } else {
+            $message = '<p class="text-red-500">Impossible de préparer la requête.</p>';
+        }
     }
 }
+include('./templates/header.php');
 ?>
+
 
 <div class="flex min-h-screen">
 <?php include('sidebar2.php'); ?>

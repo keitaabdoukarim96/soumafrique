@@ -116,9 +116,9 @@ $result = mysqli_query($conn, $query);
  <!-- Sidebar -->
  <div class="flex min-h-screen">
  <?php include('sidebar2.php'); ?>
-<div class="flex">
+<div class="flex-1 p-6">
     <!-- Contenu principal -->
-    <main class="flex-1 p-6 flex flex-col items-center justify-center">
+    <main class=" flex flex-col items-center justify-center">
         <h1 class="text-2xl font-bold mb-6 text-center">Validation des Boutiques</h1>
 
         <!-- Message dynamique -->
@@ -132,7 +132,7 @@ $result = mysqli_query($conn, $query);
         <!-- Tableau -->
         <div class="bg-white shadow-md rounded-lg overflow-hidden w-full max-w-5xl mx-auto">
             <table class="w-full bg-white border border-gray-300">
-                <thead class="bg-black text-white text-sm">
+                <thead class="bg-gray-500 text-white text-sm">
                     <tr>
                         <th class="py-2 px-2">Id</th>
                         <th class="py-2 px-2">Nom Complet</th>
